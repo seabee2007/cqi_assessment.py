@@ -16,39 +16,38 @@ import os
 from fpdf import FPDF
 
 class PDF(FPDF):
-    # Override the footer method to add page numbers
     def footer(self):
-        # Position footer 15 mm from the bottom
         self.set_y(-15)
+        # Set to italic style now that it's been added
         self.set_font('DejaVu', 'I', 8)
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 def generate_pdf(form_data):
     pdf = PDF()
-    pdf.set_auto_page_break(auto=False)  # We'll handle page breaks manually
+    pdf.set_auto_page_break(auto=False)
     pdf.add_page()
     
-    # Make sure to adjust the font path if your file is in a subfolder
-    font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
-    pdf.add_font("DejaVu", "", font_path, uni=True)
+    # Paths for normal and italic fonts
+    base_dir = os.path.dirname(__file__)
+    font_path_normal = os.path.join(base_dir, "DejaVuSans.ttf")
+    font_path_italic = os.path.join(base_dir, "DejaVuSans-Oblique.ttf")
+    
+    pdf.add_font("DejaVu", "", font_path_normal, uni=True)
+    pdf.add_font("DejaVu", "I", font_path_italic, uni=True)
     pdf.set_font("DejaVu", size=12)
     
-    # Use a counter for lines; adjust max_lines to control items per page
     max_lines = 10
     line_count = 0
-    
-    # Iterate over the form data items
     items = list(form_data.items())
     for key, value in items:
         pdf.cell(0, 10, f"{key}: {value}", ln=1)
         line_count += 1
-        
-        # If we've printed max_lines and there are more items, start a new page
         if line_count >= max_lines and (key, value) != items[-1]:
             pdf.add_page()
-            line_count = 0  # reset the counter for the new page
-    
+            line_count = 0
+
     return pdf.output(dest="S").encode("latin1")
+
 
 
 
