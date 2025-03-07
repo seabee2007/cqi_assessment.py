@@ -18,18 +18,12 @@ from fpdf import FPDF
 class PDF(FPDF):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # Determine the base directory of this script
         base_dir = os.path.dirname(__file__)
-        # Build the paths for the normal and bold font files
         normal_font_path = os.path.join(base_dir, "DejaVuSans.ttf")
-        bold_font_path = os.path.join(base_dir, "DejaVuSans-Bold.ttf")
-        # Register both fonts immediately
         self.add_font("DejaVu", "", normal_font_path, uni=True)
-        self.add_font("DejaVu", "B", bold_font_path, uni=True)
 
     def header(self):
-        # Use the bold version for the header
-        self.set_font('DejaVu', 'B', 16)
+        self.set_font('DejaVu', '', 16)  # Use normal style instead of bold
         self.cell(0, 10, "CQI Report", ln=1, align='C')
         self.ln(5)
 
@@ -40,14 +34,10 @@ class PDF(FPDF):
 
 def generate_pdf(form_data):
     pdf = PDF()
-    # Enable auto page breaks with a bottom margin of 15 mm
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
-    # Set default font for the rest of the content
     pdf.set_font("DejaVu", "", 12)
 
-    # Loop through form_data and print key/value pairs.
-    # Skip printing keys that include "Comment" if the value is empty.
     for key, value in form_data.items():
         if "Comment" in key and (value is None or str(value).strip() == ""):
             continue
