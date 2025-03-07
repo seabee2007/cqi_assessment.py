@@ -23,23 +23,22 @@ class PDF(FPDF):
         self.cell(0, 10, f"Page {self.page_no()}", 0, 0, "C")
 
 
+import os
+from fpdf import FPDF
+
 def generate_pdf(form_data):
     pdf = FPDF()
     pdf.add_page()
-
-    # Construct the absolute path to the font file
+    
+    # Adjust the path if you've put the font in a subfolder, e.g., "fonts/DejaVuSans.ttf"
     font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
     pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
-
-    # Add content (example logic)
-    items = list(form_data.items())
-    for i, (key, value) in enumerate(items):
-        pdf.cell(0, 10, f"{key}: {value}", ln=1)
-        if (i + 1) % 10 == 0 and (i + 1) < len(items):
-            pdf.add_page()
-
+    
+    # ... rest of your PDF generation code
+    
     return pdf.output(dest="S").encode("latin1")
+
 
     
     # --- Project Information ---
