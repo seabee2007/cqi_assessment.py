@@ -23,7 +23,7 @@ class PDF(FPDF):
         self.add_font("DejaVu", "", normal_font_path, uni=True)
 
     def header(self):
-        self.set_font('DejaVu', '', 16)  # Use normal style instead of bold
+        self.set_font('DejaVu', '', 16)
         self.cell(0, 10, "CQI Report", ln=1, align='C')
         self.ln(5)
 
@@ -32,19 +32,64 @@ class PDF(FPDF):
         self.set_font('DejaVu', '', 8)
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
+def wrap_text(pdf, text, cell_width):
+    """
+    Splits text into a list of lines that fit within the given cell width.
+    """
+    words = text.split()
+    lines = []
+    current_line = ""
+    for word in words:
+        test_line = f"{current_line} {word}".strip() if current_line else word
+        if pdf.get_string_width(test_line) <= cell_width:
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word
+    if current_line:
+        lines.append(current_line)
+    return lines
+
 def generate_pdf(form_data):
     pdf = PDF()
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     pdf.set_font("DejaVu", "", 12)
+    
+    # Calculate effective page width and define column widths
+    effective_width = pdf.w - pdf.l_margin - pdf.r_margin
+    key_width = effective_width * 0.3    # 30% for question/label
+    value_width = effective_width * 0.7  # 70% for details
+    line_height = 10
 
+    # Optionally add a header row for the table
+    pdf.cell(key_width, line_height, "Question", border=1, align='C')
+    pdf.cell(value_width, line_height, "Details", border=1, align='C')
+    pdf.ln(line_height)
+    
+    # Loop through form_data to populate table rows
     for key, value in form_data.items():
+        # Skip empty comments if applicable
         if "Comment" in key and (value is None or str(value).strip() == ""):
             continue
-        pdf.multi_cell(0, 10, f"{key}: {value}")
-        pdf.ln(2)
+        key_text = str(key)
+        value_text = str(value)
+        
+        # Wrap the key and value text to fit their respective columns
+        key_lines = wrap_text(pdf, key_text, key_width)
+        value_lines = wrap_text(pdf, value_text, value_width)
+        max_lines = max(len(key_lines), len(value_lines))
+        
+        # For each row, print the cells line by line so both cells have equal height
+        for i in range(max_lines):
+            k_line = key_lines[i] if i < len(key_lines) else ""
+            v_line = value_lines[i] if i < len(value_lines) else ""
+            pdf.cell(key_width, line_height, k_line, border=1)
+            pdf.cell(value_width, line_height, v_line, border=1)
+            pdf.ln(line_height)
     
     return pdf.output(dest="S").encode("latin1")
+
 
 
 
