@@ -22,24 +22,23 @@ class PDF(FPDF):
         self.set_font("Arial", "I", 8)
         self.cell(0, 10, f"Page {self.page_no()}", 0, 0, "C")
 
-from fpdf import FPDF
 
 def generate_pdf(form_data):
     pdf = FPDF()
     pdf.add_page()
 
-    # Add and use a Unicode-friendly font
-    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
+    # Construct the absolute path to the font file
+    font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
+    pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
 
-    # Example: Adding content with a manual page break after 10 items
+    # Add content (example logic)
     items = list(form_data.items())
     for i, (key, value) in enumerate(items):
         pdf.cell(0, 10, f"{key}: {value}", ln=1)
         if (i + 1) % 10 == 0 and (i + 1) < len(items):
             pdf.add_page()
-    
-    # Output as bytes (no need for manual latin1 encoding now)
+
     return pdf.output(dest="S").encode("latin1")
 
     
