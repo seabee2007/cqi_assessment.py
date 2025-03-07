@@ -522,3 +522,4 @@ if st.button("Calculate Final Score"):
             file_name="CQI_Report.pdf",
             mime="application/pdf"
         )
+
