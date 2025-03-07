@@ -58,13 +58,13 @@ def generate_pdf(form_data):
     
     # Calculate effective page width and define column widths
     effective_width = pdf.w - pdf.l_margin - pdf.r_margin
-    key_width = effective_width * 0.3    # 30% for question/label
-    value_width = effective_width * 0.7  # 70% for details
+    question_width = effective_width * 0.4    # 40% for questions/labels
+    details_width = effective_width * 0.6     # 60% for details
     line_height = 10
 
-    # Optionally add a header row for the table
-    pdf.cell(key_width, line_height, "Question", border=1, align='C')
-    pdf.cell(value_width, line_height, "Details", border=1, align='C')
+    # Add a header row for the table
+    pdf.cell(question_width, line_height, "Question", border=1, align='C')
+    pdf.cell(details_width, line_height, "Details", border=1, align='C')
     pdf.ln(line_height)
     
     # Loop through form_data to populate table rows
@@ -72,23 +72,24 @@ def generate_pdf(form_data):
         # Skip empty comments if applicable
         if "Comment" in key and (value is None or str(value).strip() == ""):
             continue
-        key_text = str(key)
-        value_text = str(value)
+        question_text = str(key)
+        details_text = str(value)
         
-        # Wrap the key and value text to fit their respective columns
-        key_lines = wrap_text(pdf, key_text, key_width)
-        value_lines = wrap_text(pdf, value_text, value_width)
-        max_lines = max(len(key_lines), len(value_lines))
+        # Wrap the text to fit within their respective columns
+        question_lines = wrap_text(pdf, question_text, question_width)
+        details_lines = wrap_text(pdf, details_text, details_width)
+        max_lines = max(len(question_lines), len(details_lines))
         
-        # For each row, print the cells line by line so both cells have equal height
+        # For each row, print both columns line by line so that the row's height is consistent.
         for i in range(max_lines):
-            k_line = key_lines[i] if i < len(key_lines) else ""
-            v_line = value_lines[i] if i < len(value_lines) else ""
-            pdf.cell(key_width, line_height, k_line, border=1)
-            pdf.cell(value_width, line_height, v_line, border=1)
+            q_line = question_lines[i] if i < len(question_lines) else ""
+            d_line = details_lines[i] if i < len(details_lines) else ""
+            pdf.cell(question_width, line_height, q_line, border=1)
+            pdf.cell(details_width, line_height, d_line, border=1)
             pdf.ln(line_height)
     
     return pdf.output(dest="S").encode("latin1")
+
 
 
 
