@@ -15,11 +15,13 @@ def sanitize(text):
 import os
 from fpdf import FPDF
 
+import os
+from fpdf import FPDF
+
 class PDF(FPDF):
     def footer(self):
         self.set_y(-15)
-        # Set to italic style now that it's been added
-        self.set_font('DejaVu', 'I', 8)
+        self.set_font('DejaVu', '', 8)  # Use normal font here
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 def generate_pdf(form_data):
@@ -27,13 +29,9 @@ def generate_pdf(form_data):
     pdf.set_auto_page_break(auto=False)
     pdf.add_page()
     
-    # Paths for normal and italic fonts
-    base_dir = os.path.dirname(__file__)
-    font_path_normal = os.path.join(base_dir, "DejaVuSans.ttf")
-    font_path_italic = os.path.join(base_dir, "DejaVuSans-Oblique.ttf")
-    
-    pdf.add_font("DejaVu", "", font_path_normal, uni=True)
-    pdf.add_font("DejaVu", "I", font_path_italic, uni=True)
+    # Define the path for the normal font file
+    font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
+    pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
     
     max_lines = 10
@@ -47,6 +45,7 @@ def generate_pdf(form_data):
             line_count = 0
 
     return pdf.output(dest="S").encode("latin1")
+
 
 
 
