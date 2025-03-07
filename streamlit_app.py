@@ -16,37 +16,39 @@ import os
 from fpdf import FPDF
 
 class PDF(FPDF):
+    def header(self):
+        # Set header font and print header text at the top of every page
+        self.set_font('DejaVu', 'B', 16)
+        self.cell(0, 10, "CQI Report", ln=1, align='C')
+        self.ln(5)  # Add a little extra space after the header
+
     def footer(self):
         # Position footer 15 mm from the bottom
         self.set_y(-15)
-        self.set_font('DejaVu', '', 8)  # Use normal style
+        self.set_font('DejaVu', '', 8)
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 def generate_pdf(form_data):
     pdf = PDF()
-    # Enable auto page breaks with a 15 mm bottom margin.
+    # Enable auto page breaks with a bottom margin of 15 mm
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
-    
+
     base_dir = os.path.dirname(__file__)
     font_path = os.path.join(base_dir, "DejaVuSans.ttf")
     pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
-    
-    # Instead of manually controlling pages, simply loop through the items.
-    # multi_cell will automatically wrap text and trigger a page break when needed.
+
+    # Loop through form_data and print items.
+    # Skip "Comment" keys that are empty or whitespace.
     for key, value in form_data.items():
-        # Use multi_cell so that if the text is long, it wraps appropriately.
+        if "Comment" in key and (value is None or str(value).strip() == ""):
+            continue
+        # Print each key/value pair; multi_cell handles wrapping and auto page breaks.
         pdf.multi_cell(0, 10, f"{key}: {value}")
-        pdf.ln(2)  # Optional: add a little extra spacing between items
-        
+        pdf.ln(2)  # Optional: add extra space between entries
+
     return pdf.output(dest="S").encode("latin1")
-
-
-
-
-
-
     
     # --- Project Information ---
     pdf.set_font("Arial", "B", 14)
