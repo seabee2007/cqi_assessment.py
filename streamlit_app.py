@@ -15,35 +15,31 @@ def sanitize(text):
 import os
 from fpdf import FPDF
 
-import os
-from fpdf import FPDF
-
 class PDF(FPDF):
     def footer(self):
+        # Position footer 15 mm from the bottom
         self.set_y(-15)
-        self.set_font('DejaVu', '', 8)  # Use normal font here
+        self.set_font('DejaVu', '', 8)  # Use normal style
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 def generate_pdf(form_data):
     pdf = PDF()
-    pdf.set_auto_page_break(auto=False)
+    # Enable auto page breaks with a 15 mm bottom margin.
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     
-    # Define the path for the normal font file
-    font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
+    base_dir = os.path.dirname(__file__)
+    font_path = os.path.join(base_dir, "DejaVuSans.ttf")
     pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
     
-    max_lines = 10
-    line_count = 0
-    items = list(form_data.items())
-    for key, value in items:
-        pdf.cell(0, 10, f"{key}: {value}", ln=1)
-        line_count += 1
-        if line_count >= max_lines and (key, value) != items[-1]:
-            pdf.add_page()
-            line_count = 0
-
+    # Instead of manually controlling pages, simply loop through the items.
+    # multi_cell will automatically wrap text and trigger a page break when needed.
+    for key, value in form_data.items():
+        # Use multi_cell so that if the text is long, it wraps appropriately.
+        pdf.multi_cell(0, 10, f"{key}: {value}")
+        pdf.ln(2)  # Optional: add a little extra spacing between items
+        
     return pdf.output(dest="S").encode("latin1")
 
 
