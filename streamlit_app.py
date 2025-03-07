@@ -30,14 +30,20 @@ def generate_pdf(form_data):
     pdf = FPDF()
     pdf.add_page()
     
-    # Adjust the path if you've put the font in a subfolder, e.g., "fonts/DejaVuSans.ttf"
+    # Adjust path if the font is inside a subfolder, e.g., "fonts/DejaVuSans.ttf"
     font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
     pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
     
-    # ... rest of your PDF generation code
+    # Your PDF generation logic
+    items = list(form_data.items())
+    for i, (key, value) in enumerate(items):
+        pdf.cell(0, 10, f"{key}: {value}", ln=1)
+        if (i + 1) % 10 == 0 and (i + 1) < len(items):
+            pdf.add_page()
     
     return pdf.output(dest="S").encode("latin1")
+
 
 
     
