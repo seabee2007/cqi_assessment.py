@@ -20,11 +20,11 @@ class PDF(FPDF):
         super().__init__(**kwargs)
         base_dir = os.path.dirname(__file__)
         normal_font_path = os.path.join(base_dir, "DejaVuSans.ttf")
-        # Register only the normal font
+        # Register only the normal font (no bold version)
         self.add_font("DejaVu", "", normal_font_path, uni=True)
-
+    
     def header(self):
-        # Use normal style for the header
+        # Use normal style for header text
         self.set_font('DejaVu', '', 16)
         self.cell(0, 10, "CQI Report", ln=1, align='C')
         self.ln(5)
@@ -40,23 +40,24 @@ def generate_pdf(form_data):
     pdf.add_page()
     pdf.set_font("DejaVu", "", 12)
 
-    # Section title for question details (non-bold)
+    # Title for the details section, using normal style
     pdf.cell(0, 10, "Question Details", ln=1, align="C")
     pdf.ln(5)
     
-    # Loop through the form data
+    # Loop through each item in form_data
     for key, value in form_data.items():
-        # Skip empty comments
+        # Skip comment fields if they are empty
         if "Comment" in key and (value is None or str(value).strip() == ""):
             continue
-        # Print the question/label
+        # Print the question or detail label
         pdf.multi_cell(0, 10, f"{key}:", border=0)
         pdf.ln(1)
-        # Print the details/answer
+        # Print the answer/details
         pdf.multi_cell(0, 10, f"{value}", border=0)
         pdf.ln(5)
     
     return pdf.output(dest="S").encode("latin1")
+
 
 
 
