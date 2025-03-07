@@ -40,28 +40,14 @@ def generate_pdf(form_data):
     pdf.add_page()
     pdf.set_font("DejaVu", "", 12)
 
-    # Title for the details section
-    pdf.set_font("DejaVu", "B", 14)
-    pdf.cell(0, 10, "Question Details", ln=1, align="C")
-    pdf.ln(5)
-    
-    # Loop through the form_data dictionary
     for key, value in form_data.items():
-        # If you want to skip printing empty comments, for example:
         if "Comment" in key and (value is None or str(value).strip() == ""):
             continue
-        
-        # Print the question (or detail label) in bold
-        pdf.set_font("DejaVu", "B", 12)
-        pdf.multi_cell(0, 10, f"{key}:", border=0)
-        pdf.ln(1)
-        
-        # Print the answer/details in normal font
-        pdf.set_font("DejaVu", "", 12)
-        pdf.multi_cell(0, 10, f"{value}", border=0)
-        pdf.ln(5)  # Space between questions
-
+        pdf.multi_cell(0, 10, f"{key}: {value}")
+        pdf.ln(2)
+    
     return pdf.output(dest="S").encode("latin1")
+
 
 
     
