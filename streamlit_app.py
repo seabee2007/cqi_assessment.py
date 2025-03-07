@@ -20,12 +20,12 @@ class PDF(FPDF):
         super().__init__(**kwargs)
         base_dir = os.path.dirname(__file__)
         normal_font_path = os.path.join(base_dir, "DejaVuSans.ttf")
-        # Register only the normal font (no bold version)
+        bold_font_path = os.path.join(base_dir, "DejaVuSans-Bold.ttf")
         self.add_font("DejaVu", "", normal_font_path, uni=True)
-    
+        self.add_font("DejaVu", "B", bold_font_path, uni=True)
+
     def header(self):
-        # Use normal style for header text
-        self.set_font('DejaVu', '', 16)
+        self.set_font('DejaVu', 'B', 16)
         self.cell(0, 10, "CQI Report", ln=1, align='C')
         self.ln(5)
 
@@ -40,22 +40,27 @@ def generate_pdf(form_data):
     pdf.add_page()
     pdf.set_font("DejaVu", "", 12)
 
-    # Title for the details section, using normal style
+    # Title for the details section
+    pdf.set_font("DejaVu", "B", 14)
     pdf.cell(0, 10, "Question Details", ln=1, align="C")
     pdf.ln(5)
     
-    # Loop through each item in form_data
+    # Loop through the form_data dictionary
     for key, value in form_data.items():
-        # Skip comment fields if they are empty
+        # If you want to skip printing empty comments, for example:
         if "Comment" in key and (value is None or str(value).strip() == ""):
             continue
-        # Print the question or detail label
+        
+        # Print the question (or detail label) in bold
+        pdf.set_font("DejaVu", "B", 12)
         pdf.multi_cell(0, 10, f"{key}:", border=0)
         pdf.ln(1)
-        # Print the answer/details
+        
+        # Print the answer/details in normal font
+        pdf.set_font("DejaVu", "", 12)
         pdf.multi_cell(0, 10, f"{value}", border=0)
-        pdf.ln(5)
-    
+        pdf.ln(5)  # Space between questions
+
     return pdf.output(dest="S").encode("latin1")
 
 
