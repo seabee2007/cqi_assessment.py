@@ -23,9 +23,17 @@ class PDF(FPDF):
         self.cell(0, 10, f"Page {self.page_no()}", 0, 0, "C")
 
 def generate_pdf(form_data):
-    pdf = PDF()
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)  # Enable auto page breaks
     pdf.add_page()
     pdf.set_font("Arial", size=12)
+
+    for key, value in form_data.items():
+        # If your content might be longer than one line, consider using multi_cell.
+        pdf.multi_cell(0, 10, f"{key}: {value}")
+
+    return pdf.output(dest="S").encode("latin1")
+
     
     # --- Project Information ---
     pdf.set_font("Arial", "B", 14)
