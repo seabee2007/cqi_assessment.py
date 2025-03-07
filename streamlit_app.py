@@ -12,37 +12,44 @@ def sanitize(text):
     return text
 
 # Custom PDF class with header and footer.
-class PDF(FPDF):
-    def header(self):
-        self.set_font("Arial", "B", 16)
-        self.cell(0, 10, sanitize("Construction Quality Inspection (CQI) Checklist"), 0, 1, "C")
-        self.ln(5)
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 8)
-        self.cell(0, 10, f"Page {self.page_no()}", 0, 0, "C")
-
-
 import os
 from fpdf import FPDF
 
+class PDF(FPDF):
+    # Override the footer method to add page numbers
+    def footer(self):
+        # Position footer 15 mm from the bottom
+        self.set_y(-15)
+        self.set_font('DejaVu', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
 def generate_pdf(form_data):
-    pdf = FPDF()
+    pdf = PDF()
+    pdf.set_auto_page_break(auto=False)  # We'll handle page breaks manually
     pdf.add_page()
     
-    # Adjust path if the font is inside a subfolder, e.g., "fonts/DejaVuSans.ttf"
+    # Make sure to adjust the font path if your file is in a subfolder
     font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
     pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", size=12)
     
-    # Your PDF generation logic
+    # Use a counter for lines; adjust max_lines to control items per page
+    max_lines = 10
+    line_count = 0
+    
+    # Iterate over the form data items
     items = list(form_data.items())
-    for i, (key, value) in enumerate(items):
+    for key, value in items:
         pdf.cell(0, 10, f"{key}: {value}", ln=1)
-        if (i + 1) % 10 == 0 and (i + 1) < len(items):
+        line_count += 1
+        
+        # If we've printed max_lines and there are more items, start a new page
+        if line_count >= max_lines and (key, value) != items[-1]:
             pdf.add_page()
+            line_count = 0  # reset the counter for the new page
     
     return pdf.output(dest="S").encode("latin1")
+
 
 
 
