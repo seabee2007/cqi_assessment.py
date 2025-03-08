@@ -112,60 +112,72 @@ import emoji
 if "calc_expr" not in st.session_state:
     st.session_state.calc_expr = ""
 
-# Use an expander in the sidebar to simulate a modal-like calculator
-with st.sidebar.expander("Calculator " + emoji.emojize(":abacus:"), expanded=True):
-    # Display the current expression in a read-only text input
-    st.text_input("Expression", value=st.session_state.calc_expr, key="calc_display", disabled=True)
+# Define calculator functions
+def update_calc(val):
+    st.session_state.calc_expr += str(val)
 
-    # Layout calculator buttons in a grid using columns
+def clear_calc():
+    st.session_state.calc_expr = ""
+
+def evaluate_calc():
+    try:
+        st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
+    except Exception:
+        st.session_state.calc_expr = "Error"
+
+# Create a sidebar expander that acts like a floating calculator.
+with st.sidebar.expander("Calculator " + emoji.emojize(":abacus:"), expanded=True):
+    # Display the current calculator expression in a read-only text input
+    st.text_input("Expression", value=st.session_state.calc_expr, key="calc_display", disabled=True)
+    
+    # Arrange calculator buttons in a grid
     col1, col2, col3, col4 = st.columns(4)
     if col1.button("7", key="btn7"):
-        st.session_state.calc_expr += "7"
+        update_calc("7")
     if col2.button("8", key="btn8"):
-        st.session_state.calc_expr += "8"
+        update_calc("8")
     if col3.button("9", key="btn9"):
-        st.session_state.calc_expr += "9"
+        update_calc("9")
     if col4.button("/", key="btn_div"):
-        st.session_state.calc_expr += "/"
-
+        update_calc("/")
+    
     col1, col2, col3, col4 = st.columns(4)
     if col1.button("4", key="btn4"):
-        st.session_state.calc_expr += "4"
+        update_calc("4")
     if col2.button("5", key="btn5"):
-        st.session_state.calc_expr += "5"
+        update_calc("5")
     if col3.button("6", key="btn6"):
-        st.session_state.calc_expr += "6"
+        update_calc("6")
     if col4.button("*", key="btn_mul"):
-        st.session_state.calc_expr += "*"
-
+        update_calc("*")
+    
     col1, col2, col3, col4 = st.columns(4)
     if col1.button("1", key="btn1"):
-        st.session_state.calc_expr += "1"
+        update_calc("1")
     if col2.button("2", key="btn2"):
-        st.session_state.calc_expr += "2"
+        update_calc("2")
     if col3.button("3", key="btn3"):
-        st.session_state.calc_expr += "3"
+        update_calc("3")
     if col4.button("-", key="btn_sub"):
-        st.session_state.calc_expr += "-"
-
+        update_calc("-")
+    
     col1, col2, col3, col4 = st.columns(4)
     if col1.button("0", key="btn0"):
-        st.session_state.calc_expr += "0"
+        update_calc("0")
     if col2.button(".", key="btn_dot"):
-        st.session_state.calc_expr += "."
+        update_calc(".")
     if col3.button("=", key="btn_eq"):
-        try:
-            st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
-        except Exception:
-            st.session_state.calc_expr = "Error"
+        evaluate_calc()
     if col4.button("+", key="btn_add"):
-        st.session_state.calc_expr += "+"
-
+        update_calc("+")
+    
+    # Clear button
     if st.button("Clear", key="btn_clear"):
-        st.session_state.calc_expr = ""
+        clear_calc()
 
-# Display the current expression below the calculator for feedback
+# Display the current expression below (for debugging / confirmation)
 st.write("Current Expression:", st.session_state.calc_expr)
+
 
 
 
