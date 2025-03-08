@@ -32,7 +32,7 @@ def wrap_text(pdf, text, cell_width):
 
 # -------------------------------------------------------------------
 # Mapping dictionary with amplifying info for items 1–29.
-# (Sample text; update as needed to match your CQI Handbook.)
+# (Update these strings as needed to match your CQI Handbook.)
 handbook_info = {
     "Item 1 – Self Assessment": "Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)",
     "Item 2 – Self Assessment Submission": "Were the self-assessment results submitted to 30 NCR SharePoint at least 7 days prior to inspection? (Yes = 2 pts, No = 0 pts)",
@@ -66,7 +66,7 @@ handbook_info = {
 }
 
 # -------------------------------------------------------------------
-# Custom PDF class
+# Custom PDF class with header and footer.
 # -------------------------------------------------------------------
 class PDF(FPDF):
     def __init__(self, **kwargs):
@@ -77,6 +77,7 @@ class PDF(FPDF):
     
     def header(self):
         self.set_font("DejaVu", "", 16)
+        # Print header in all caps
         self.cell(0, 10, "CQI REPORT", ln=1, align="C")
         self.ln(5)
     
@@ -106,41 +107,44 @@ def generate_pdf(handbook_details, form_data):
     pdf.ln(line_height)
     pdf.set_font("DejaVu", "", 12)
     
-    # For each item, print the item with its amplifying info and score.
+    # For each item, print a two-row block:
+    # Row 1: Left cell = ITEM QUESTION (all caps with colon) + amplifying info (separated by newline)
+    #         Right cell = numerical score (centered)
+    # Then, if a comment exists, print a full-width row with the comment.
     for item, info in handbook_details.items():
-        # Prepare left cell: item question (uppercase) and amplifying info.
+        # Prepare left cell text (all uppercase)
         left_text = f"{item.upper()}: {info}"
-        # Prepare right cell: score from form_data.
+        # Prepare score text from form_data.
         score = form_data.get(item, "")
         right_text = f"{score}"
         
-        # Determine required height for left cell.
+        # Wrap the left and right texts.
         left_lines = wrap_text(pdf, left_text, left_width)
-        left_cell_height = len(left_lines) * line_height
-        # Determine required height for right cell.
         right_lines = wrap_text(pdf, right_text, score_width)
-        right_cell_height = len(right_lines) * line_height
-        cell_height = max(left_cell_height, right_cell_height)
+        # Determine the total height needed for the item block.
+        # We want one single rectangle for the left cell.
+        num_lines = max(len(left_lines), len(right_lines))
+        block_height = num_lines * line_height
         
-        # Save current positions.
+        # Save current position.
         start_x = pdf.get_x()
         start_y = pdf.get_y()
         
-        # Left cell: Print the text without border.
+        # Print left cell text without borders.
         pdf.set_xy(start_x, start_y)
         pdf.multi_cell(left_width, line_height, left_text, border=0)
-        # Draw a single rectangle around the entire left cell.
-        pdf.rect(start_x, start_y, left_width, cell_height)
+        # Draw one rectangle around the left cell.
+        pdf.rect(start_x, start_y, left_width, block_height)
         
-        # Right cell: Print the score (centered).
+        # Print right cell: score (centered) with no internal borders.
         pdf.set_xy(start_x + left_width, start_y)
         pdf.multi_cell(score_width, line_height, right_text, border=0, align="C")
-        pdf.rect(start_x + left_width, start_y, score_width, cell_height)
+        pdf.rect(start_x + left_width, start_y, score_width, block_height)
         
-        # Move to the next row.
-        pdf.set_xy(start_x, start_y + cell_height)
+        # Move the cursor to the next row.
+        pdf.set_xy(start_x, start_y + block_height)
         
-        # If there is a comment, print a full-width row below.
+        # If a comment exists, print a full-width row for it.
         comment = form_data.get(f"Comment for {item}", "")
         if comment.strip():
             comment_text = f"COMMENT: {comment}"
@@ -167,7 +171,7 @@ def generate_pdf(handbook_details, form_data):
 # -------------------------------------------------------------------
 st.title("Construction Quality Inspection (CQI) Assessment Tool")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
-st.write("Fill out the fields below. For any item that does not achieve the perfect score, a comment is required. The final PDF will display each item with its amplifying info (in uppercase) along with your score and any comment.")
+st.write("Fill out the fields below. For any item that does not achieve the perfect score, a comment is required. The final PDF will display each item (in all caps) with its amplifying info alongside your score and, if applicable, a full-width comment row.")
 
 # --- Project Information ---
 st.header("Project Information")
@@ -181,9 +185,9 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# For each item, display the item, its amplifying info (using st.info), then input widgets.
-# The key for each score is the same as the handbook_info key.
-# The comment will be stored under the key "Comment for {item}".
+# For each item, display the item question (with amplifying info) together.
+# The key for the score is the same as the handbook key.
+# Comments will be stored under "Comment for {item}".
 # Item 1
 st.subheader("Item 1 – Self Assessment")
 st.info(handbook_info["Item 1 – Self Assessment"])
@@ -203,7 +207,7 @@ comment_item3 = st.text_area("Comment (if not perfect):", key="Comment for Item 
 st.subheader("Item 4 – Project Schedule")
 st.info(handbook_info["Item 4 – Project Schedule"])
 st.markdown(
-    "Score is based on the difference between planned and actual work-in-place.\n"
+    "Score is based on the percentage difference between planned and actual work-in-place.\n"
     "Exact = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts."
 )
 total_md = st.number_input("Total Project Mandays:", value=1000, step=1, key="total_md")
@@ -359,7 +363,7 @@ comment_item29 = st.text_area("Comment (if deduction applied):", key="Comment fo
 # -------------------------------------------------------------------
 if st.button("Calculate Final Score"):
     errors = []
-    # Sample validations (extend for all items as needed)
+    # Sample validations (extend as needed)
     if item1 != "Yes" and not comment_item1.strip():
         errors.append("Item 1 requires a comment.")
     if item2 != "Yes" and not comment_item2.strip():
