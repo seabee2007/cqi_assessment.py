@@ -320,35 +320,120 @@ comment_item29 = st.text_area("Comment (if deduction applied):", key="item29_com
 # --- Calculate Final Score ---
 if st.button("Calculate Final Score", key="calculate_final_score"):
     errors = []
+    # Validations: if an item did not score perfectly, ensure a comment is provided.
     if item1 != "Yes" and not comment_item1.strip():
-        errors.append("Item 1 requires a comment.")
-    # ... additional validations for other items ...
+        errors.append("Item 1 requires a comment if not perfect.")
+    if item2 != "Yes" and not comment_item2.strip():
+        errors.append("Item 2 requires a comment if not perfect.")
+    if item3 != "Yes" and not comment_item3.strip():
+        errors.append("Item 3 requires a comment if not perfect.")
+    if item4_score != 16 and not comment_item4.strip():
+        errors.append("Item 4 requires a comment if score is not 16.")
+    if item5 != "Yes" and not comment_item5.strip():
+        errors.append("Item 5 requires a comment if not perfect.")
+    if item6 != 4 and not comment_item6.strip():
+        errors.append("Item 6 requires a comment if score is not 4.")
+    if item78 != 4 and not comment_item78.strip():
+        errors.append("Items 7 & 8 require a comment if score is not 4.")
+    if item9 != 4 and not comment_item9.strip():
+        errors.append("Item 9 requires a comment if score is not 4.")
+    if item10 not in ["N/A", 4] and not comment_item10.strip():
+        errors.append("Item 10 requires a comment if score is not perfect.")
+    if item11 != "Yes" and not comment_item11.strip():
+        errors.append("Item 11 requires a comment if not perfect.")
+    if item12 != 4 and not comment_item12.strip():
+        errors.append("Item 12 requires a comment if score is not 4.")
+    if item13 != 4 and not comment_item13.strip():
+        errors.append("Item 13 requires a comment if score is not 4.")
+    if item14 != 10 and not comment_item14.strip():
+        errors.append("Item 14 requires a comment if score is not 10.")
+    if item15 != "Yes" and not comment_item15.strip():
+        errors.append("Item 15 requires a comment if not perfect.")
+    if item16 != 10 and not comment_item16.strip():
+        errors.append("Item 16 requires a comment if score is not 10.")
+    if item17 != "Yes" and not comment_item17.strip():
+        errors.append("Item 17 requires a comment if not perfect.")
+    if item18 != "Yes" and not comment_item18.strip():
+        errors.append("Item 18 requires a comment if not perfect.")
+    if item19 != 5 and not comment_item19.strip():
+        errors.append("Item 19 requires a comment if score is not 5.")
+    if item20 != 6 and not comment_item20.strip():
+        errors.append("Item 20 requires a comment if score is not 6.")
+    if item21 != 6 and not comment_item21.strip():
+        errors.append("Item 21 requires a comment if score is not 6.")
+    if item22 != 12 and not comment_item22.strip():
+        errors.append("Item 22 requires a comment if score is not 12.")
+    if item23 != 5 and not comment_item23.strip():
+        errors.append("Item 23 requires a comment if score is not 5.")
+    if deduction24 != 0 and not comment_item24.strip():
+        errors.append("Item 24 requires a comment if a deduction is applied.")
+    if item25 != 8 and not comment_item25.strip():
+        errors.append("Item 25 requires a comment if score is not 8.")
+    if item26 != 4 and not comment_item26.strip():
+        errors.append("Item 26 requires a comment if score is not 4.")
+    if item27a != 10 and not comment_item27a.strip():
+        errors.append("Item 27a requires a comment if score is not 10.")
+    if item27b != 5 and not comment_item27b.strip():
+        errors.append("Item 27b requires a comment if score is not 5.")
+    if deduction28 != 0 and not comment_item28.strip():
+        errors.append("Item 28 requires a comment if a deduction is applied.")
+    if deduction29 != 0 and not comment_item29.strip():
+        errors.append("Item 29 requires a comment if a deduction is applied.")
     
     if errors:
         for err in errors:
             st.error(err)
     else:
-        score1 = 2 if item1 == "Yes" else 0
-        score2 = 2 if item2 == "Yes" else 0
-        score3 = 4 if item3 == "Yes" else 0
-        score5 = 2 if item5 == "Yes" else 0
-        # For items 6, 7&8, assume numeric values are selected:
-        score6 = item6
-        score78 = item78
-        # For demonstration, the total score will be calculated with available items:
-        total_score = (
-            score1 + score2 + score3 + item4_score + score5 +
-            score6 + score78 +
-            0  # Placeholder for items 9-29, you should adjust accordingly.
-        )
-        final_percentage = round(total_score / 175 * 100, 1)
+        # Calculate numeric scores for each item:
+        score1  = 2 if item1  == "Yes" else 0
+        score2  = 2 if item2  == "Yes" else 0
+        score3  = 4 if item3  == "Yes" else 0
+        score4  = item4_score  # already computed from work-in-place differences (max 16)
+        score5  = 2 if item5  == "Yes" else 0
+        score6  = item6         # selectbox value (max 4)
+        score7_8= item78        # selectbox value (max 4)
+        score9  = item9         # selectbox value (max 4)
+        score10 = item10 if item10 != "N/A" else 0
+        score11 = 4 if item11 == "Yes" else 0
+        score12 = item12        # selectbox (max 4)
+        score13 = item13        # selectbox (max 4)
+        score14 = item14        # selectbox (max 10)
+        score15 = 2 if item15 == "Yes" else 0
+        score16 = item16        # selectbox (max 10)
+        score17 = 2 if item17 == "Yes" else 0
+        score18 = 2 if item18 == "Yes" else 0
+        score19 = item19        # selectbox (max 5)
+        score20 = item20        # selectbox (max 6)
+        score21 = item21        # selectbox (max 6)
+        score22 = item22        # selectbox (max 12)
+        score23 = item23        # selectbox (max 5)
+        score24 = 20 - deduction24  # maximum 20, deduction applied
+        score25 = item25        # selectbox (max 8)
+        score26 = item26        # selectbox (max 4)
+        score27a= item27a       # selectbox (max 10)
+        score27b= item27b       # selectbox (max 5)
+        score28 = 5 - deduction28 # maximum 5, deduction applied
+        score29 = 5 - deduction29 # maximum 5, deduction applied
+
+        # Sum all scores:
+        total_score = (score1 + score2 + score3 + score4 + score5 +
+                       score6 + score7_8 + score9 + score10 + score11 +
+                       score12 + score13 + score14 + score15 + score16 +
+                       score17 + score18 + score19 + score20 + score21 +
+                       score22 + score23 + score24 + score25 + score26 +
+                       score27a + score27b + score28 + score29)
+                       
+        # Adjust the maximum score if needed; here, the assumed maximum is 171.
+        final_percentage = round(total_score / 171 * 100, 1)
        
         st.session_state.final_score = total_score
         st.session_state.final_percentage = final_percentage
         
         st.success("Final Score Calculated!")
-        st.write("**Final Score:**", total_score, "out of 175")
+        st.write("**Final Score:**", total_score, "out of 171")
         st.write("**Final Percentage:**", final_percentage, "%")
+
+
 
 # --- Signature Blocks Section ---
 default_canvas = {"background": "#FFF", "objects": []}
