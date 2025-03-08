@@ -97,8 +97,10 @@ st.write("Fill out the fields below. For any item that does not achieve the perf
 
 # --- Project Information ---
 st.header("Project Information")
-proj_name_input = st.text_input("OIC Name:", key="proj_name_input")
-battalion_input = st.text_input("AOIC:", key="battalion_input")
+proj_name_input = st.text_input("Project Name:", key="proj_name_input")
+battalion_input = st.text_input("Battalion:", key="battalion_input")
+oic_name_input = st.text_input("OIC Name:", key="oic_name_input")
+aoic_input = st.text_input("AOIC:", key="aoic_input")
 start_date = st.date_input("Start Date:", key="start_date_input")
 planned_start = st.date_input("Planned Start Date:", key="planned_start_input")
 planned_completion = st.date_input("Planned Completion Date:", key="planned_completion_input")
