@@ -3,7 +3,9 @@ import streamlit.components.v1 as components
 import datetime
 import io
 import os
-from streamlit_drawable_canvas import st_canvas  # Added for signature blocks
+import base64
+from PIL import Image
+from streamlit_drawable_canvas import st_canvas
 
 # -------------------------------------------------------------------
 # Print-specific CSS (injected at the top)
@@ -52,6 +54,16 @@ def sanitize(text):
         return text.replace("\u2013", "-").replace("\u2014", "-")
     return text
 
+def image_to_base64(image_array):
+    """Convert a NumPy image array to a base64 encoded PNG."""
+    if image_array is None:
+        return ""
+    im = Image.fromarray((image_array).astype('uint8'))
+    buff = io.BytesIO()
+    im.save(buff, format="PNG")
+    img_str = base64.b64encode(buff.getvalue()).decode("utf-8")
+    return img_str
+
 # -------------------------------------------------------------------
 # Handbook Amplifying Info for Items 1–29 (sample text; update as needed)
 # -------------------------------------------------------------------
@@ -98,7 +110,7 @@ st.write("Fill out the fields below. For any item that does not achieve the perf
 st.header("Project Information")
 proj_name_input = st.text_input("Project Name:", key="proj_name_input")
 battalion_input = st.text_input("Battalion:", key="battalion_input")
-oic_name_input = st.text_input("OIC:", key="oic_name_input")
+oic_name_input = st.text_input("OIC Name:", key="oic_name_input")
 aoic_input = st.text_input("AOIC:", key="aoic_input")
 start_date = st.date_input("Start Date:", key="start_date_input")
 planned_start = st.date_input("Planned Start Date:", key="planned_start_input")
@@ -311,7 +323,6 @@ comment_item29 = st.text_area("Comment (if deduction applied):", key="item29_com
 # -------------------------------------------------------------------
 if st.button("Calculate Final Score", key="calculate_final_score"):
     errors = []
-    # (Sample validations; extend for all items as needed)
     if item1 != "Yes" and not comment_item1.strip():
         errors.append("Item 1 requires a comment.")
     if item2 != "Yes" and not comment_item2.strip():
@@ -375,7 +386,6 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         for err in errors:
             st.error(err)
     else:
-        # Convert Yes/No responses to numeric scores.
         score1 = 2 if item1 == "Yes" else 0
         score2 = 2 if item2 == "Yes" else 0
         score3 = 4 if item3 == "Yes" else 0
@@ -396,64 +406,92 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         )
         final_percentage = round(total_score / 175 * 100, 1)
        
-        # Save results and project info to session state.
         st.session_state.final_score = total_score
         st.session_state.final_percentage = final_percentage
-        # Uncomment the following lines if you want to display these at the top:
-        # st.session_state.proj_name = proj_name_input
-        # st.session_state.battalion = battalion_input
         
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
 # -------------------------------------------------------------------
-# Print instructions using a widget button
+# Print instructions using a widget button that generates a print-friendly snapshot
 # -------------------------------------------------------------------
 if st.button("Print This Page", key="print_button"):
-    st.components.v1.html(
-        """
+    # Retrieve final score data
+    final_score = st.session_state.get("final_score", "N/A")
+    final_percentage = st.session_state.get("final_percentage", "N/A")
+    
+    # Convert signature canvas image data to base64 images
+    # Note: st_canvas.image_data is a NumPy array.
+    oic_base64 = image_to_base64(canvas_result_oic.image_data)
+    ncr_base64 = image_to_base64(canvas_result_30ncr.image_data)
+    
+    # Build the print-friendly HTML page
+    html_content = f"""
+    <html>
+      <head>
+        <style>
+          body {{ font-family: Arial, sans-serif; margin: 20px; }}
+          .signature {{ border: 1px solid #000; width: 500px; height: 150px; }}
+          h2, h3 {{ text-align: center; }}
+        </style>
+      </head>
+      <body>
+        <h2>Final Score: {final_score} out of 175</h2>
+        <h3>Final Percentage: {final_percentage}%</h3>
+        <h4>OIC Signature:</h4>
+        <img src="data:image/png;base64,{oic_base64}" class="signature"/>
+        <h4>30 NCR Signature:</h4>
+        <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
         <script>
-          window.parent.print();
+          window.onload = function() {{
+             window.print();
+          }};
         </script>
-        """,
-        height=0,
-    )
-# Define a default canvas dictionary (place this before the form block)
+      </body>
+    </html>
+    """
+    components.html(html_content, height=600)
+
+# -------------------------------------------------------------------
+# Signature Blocks Section (below the print button)
+# -------------------------------------------------------------------
+# Ensure default canvas is defined for signatures
 default_canvas = {"background": "#FFF", "objects": []}
 
-with st.form("signature_form"):
-    st.header("Signatures")
-    
-    st.markdown("#### OIC Signature")
-    canvas_result_oic = st_canvas(
-        fill_color="rgba(255,165,0,0.3)",
-        stroke_width=2,
-        stroke_color="#000000",
-        background_color="#FFF",
-        height=150,
-        width=500,
-        drawing_mode="freedraw",
-        key="oic_signature",
-        initial_drawing=st.session_state.get("oic_signature_data", default_canvas)
-    )
-    
-    st.markdown("#### 30 NCR Signature")
-    canvas_result_30ncr = st_canvas(
-        fill_color="rgba(255,165,0,0.3)",
-        stroke_width=2,
-        stroke_color="#000000",
-        background_color="#FFF",
-        height=150,
-        width=500,
-        drawing_mode="freedraw",
-        key="ncr_signature",
-        initial_drawing=st.session_state.get("ncr_signature_data", default_canvas)
-    )
-    
-    submit_signatures = st.form_submit_button("Save Signatures")
-    
-    if submit_signatures:
-        st.session_state.oic_signature_data = canvas_result_oic.json_data
-        st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
-        st.success("Signatures Saved!")
+# Initialize session state for signature data if not already set
+if "oic_signature_data" not in st.session_state:
+    st.session_state.oic_signature_data = default_canvas
+if "ncr_signature_data" not in st.session_state:
+    st.session_state.ncr_signature_data = default_canvas
+
+st.header("Signatures")
+st.markdown("#### OIC Signature")
+canvas_result_oic = st_canvas(
+    fill_color="rgba(255,165,0,0.3)",
+    stroke_width=2,
+    stroke_color="#000000",
+    background_color="#FFF",
+    height=150,
+    width=500,
+    drawing_mode="freedraw",
+    key="oic_signature",
+    initial_drawing=st.session_state.get("oic_signature_data", default_canvas)
+)
+if canvas_result_oic.json_data is not None:
+    st.session_state.oic_signature_data = canvas_result_oic.json_data
+
+st.markdown("#### 30 NCR Signature")
+canvas_result_30ncr = st_canvas(
+    fill_color="rgba(255,165,0,0.3)",
+    stroke_width=2,
+    stroke_color="#000000",
+    background_color="#FFF",
+    height=150,
+    width=500,
+    drawing_mode="freedraw",
+    key="ncr_signature",
+    initial_drawing=st.session_state.get("ncr_signature_data", default_canvas)
+)
+if canvas_result_30ncr.json_data is not None:
+    st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
