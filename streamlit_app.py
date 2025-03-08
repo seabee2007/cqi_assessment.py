@@ -4,18 +4,14 @@ import datetime
 import io
 import os
 
-# -------------------------------------------------------------------
-# Print-specific CSS (injected at the top)
-# -------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    /* Hide elements with the "no-print" class when printing */
-    .no-print {
-        display: none;
-    }
-    /* Style adjustments for printing */
+    /* Only hide elements with the "no-print" class when printing */
     @media print {
+        .no-print {
+            display: none;
+        }
         body {
             margin: 20px;
             font-size: 12pt;
@@ -388,13 +384,11 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         st.write("**Final Percentage:**", final_percentage, "%")
 
 
-# -------------------------------------------------------------------
-# Print instructions (won't be printed because of the no-print class)
-# -------------------------------------------------------------------
 st.markdown(
     """
     <div class="no-print" style="text-align: center; margin-top: 20px;">
-      <button onclick="window.print(); return false;" style="padding:10px 20px; font-size:16px;">
+      <button onclick="window.print();" 
+              style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size:16px; cursor: pointer;">
         Print This Page
       </button>
     </div>
