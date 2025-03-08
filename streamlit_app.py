@@ -738,6 +738,7 @@ if st.button("Print Full Report", key="print_full_report"):
     html_content = f"""
     <html>
       <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           body {{ font-family: Arial, sans-serif; margin: 20px; }}
           table {{ width: 100%; height: 100%; border-collapse: collapse; margin-bottom: 20px; }}
