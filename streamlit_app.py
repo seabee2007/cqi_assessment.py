@@ -35,7 +35,6 @@ if "final_score" in st.session_state:
     st.markdown(
         f"""
         <div style="background-color:#f0f2f6; padding:10px; margin-bottom:20px;">
-        
             <h3>Final Score: {st.session_state.final_score} out of 175</h3>
             <h4>Final Percentage: {st.session_state.final_percentage}%</h4>
         </div>
