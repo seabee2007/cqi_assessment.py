@@ -339,5 +339,16 @@ if st.button("Calculate Final Score"):
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
-        
+        # -------------------------------------------------------------------
+# Generate Printable HTML Form Button
+# -------------------------------------------------------------------
+if st.button("Generate Printable Form"):
+    if "final_score" not in st.session_state or "final_percentage" not in st.session_state:
+        st.error("Please calculate the final score first.")
+    else:
+        # Use your existing form_data in st.session_state
+        html_output = generate_html(st.session_state.form_data, handbook_info, perfect_scores)
+        components.html(html_output, height=600, scrolling=True)
+        st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
+
        
