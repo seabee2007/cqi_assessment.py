@@ -394,30 +394,93 @@ with st.form("signature_form"):
         st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
         st.success("Signatures Saved!")
 
-# --- Print Page Button ---
-if st.button("Print This Page", key="print_button"):
+# --- Print Full Report Button ---
+if st.button("Print Full Report", key="print_full_report"):
+    # Retrieve final score data
     final_score = st.session_state.get("final_score", "N/A")
     final_percentage = st.session_state.get("final_percentage", "N/A")
     
+    # Retrieve project info from variables (or session state if you stored them)
+    project_name = proj_name_input
+    battalion = battalion_input
+    oic_name = oic_name_input
+    aoic = aoic_input
+    start = start_date.strftime("%Y-%m-%d") if isinstance(start_date, datetime.date) else start_date
+    planned_start_str = planned_start.strftime("%Y-%m-%d") if isinstance(planned_start, datetime.date) else planned_start
+    planned_completion_str = planned_completion.strftime("%Y-%m-%d") if isinstance(planned_completion, datetime.date) else planned_completion
+    actual_completion_str = actual_completion.strftime("%Y-%m-%d") if isinstance(actual_completion, datetime.date) else actual_completion
+    
+    # Convert signature canvas image data to base64 images
     oic_base64 = image_to_base64(canvas_result_oic.image_data)
     ncr_base64 = image_to_base64(canvas_result_30ncr.image_data)
     
+    # Build an HTML table for assessment items
+    # (For demonstration, we’ll include Items 1 to 3; you should add rows for all items as needed.)
+    assessment_rows = f"""
+      <tr>
+        <td>Item 1 – Self Assessment</td>
+        <td>{'2' if item1=='Yes' else '0'}</td>
+        <td>{comment_item1}</td>
+      </tr>
+      <tr>
+        <td>Item 2 – Self Assessment Submission</td>
+        <td>{'2' if item2=='Yes' else '0'}</td>
+        <td>{comment_item2}</td>
+      </tr>
+      <tr>
+        <td>Item 3 – Notice to Proceed (NTP)</td>
+        <td>{'4' if item3=='Yes' else '0'}</td>
+        <td>{comment_item3}</td>
+      </tr>
+    """
+    # (Repeat for Items 4 through 29 as needed.)
+    
+    # Build the full HTML content
     html_content = f"""
     <html>
       <head>
         <style>
           body {{ font-family: Arial, sans-serif; margin: 20px; }}
-          .signature {{ border: 1px solid #000; width: 500px; height: 150px; }}
-          h2, h3 {{ text-align: center; }}
+          table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+          th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
+          th {{ background-color: #f2f2f2; }}
+          .signature {{ border: 1px solid #000; width: 500px; height: 150px; display: block; margin-bottom: 20px; }}
+          h2, h3, h4 {{ text-align: center; }}
         </style>
       </head>
       <body>
-        <h2>Final Score: {final_score} out of 175</h2>
-        <h3>Final Percentage: {final_percentage}%</h3>
+        <h2>Construction Quality Inspection Report</h2>
+        <h3>Project Information</h3>
+        <p><strong>Project Name:</strong> {project_name}</p>
+        <p><strong>Battalion:</strong> {battalion}</p>
+        <p><strong>OIC:</strong> {oic_name}</p>
+        <p><strong>AOIC:</strong> {aoic}</p>
+        <p><strong>Start Date:</strong> {start}</p>
+        <p><strong>Planned Start:</strong> {planned_start_str}</p>
+        <p><strong>Planned Completion:</strong> {planned_completion_str}</p>
+        <p><strong>Actual Completion:</strong> {actual_completion_str}</p>
+        
+        <h3>Assessment Details</h3>
+        <table>
+          <tr>
+            <th>Item</th>
+            <th>Score</th>
+            <th>Comment</th>
+          </tr>
+          {assessment_rows}
+          <!-- Add more rows for Items 4-29 here -->
+        </table>
+        
+        <h3>Final Score</h3>
+        <p><strong>Final Score:</strong> {final_score} out of 175</p>
+        <p><strong>Final Percentage:</strong> {final_percentage}%</p>
+        
+        <h3>Signatures</h3>
         <h4>OIC Signature:</h4>
         <img src="data:image/png;base64,{oic_base64}" class="signature"/>
         <h4>30 NCR Signature:</h4>
         <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
+        
         <script>
           window.onload = function() {{
              window.print();
@@ -426,4 +489,6 @@ if st.button("Print This Page", key="print_button"):
       </body>
     </html>
     """
-    components.html(html_content, height=600)
+    
+    # Render the HTML snapshot in an iframe for printing
+    components.html(html_content, height=800)
