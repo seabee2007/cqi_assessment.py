@@ -333,5 +333,11 @@ if st.button("Calculate Final Score"):
             item28 + item29
         )
         final_percentage = round(total_score / 175 * 100, 1)
+        st.session_state.form_data = form_data
+        st.session_state.final_score = total_score
+        st.session_state.final_percentage = final_percentage
+        st.success("Final Score Calculated!")
+        st.write("**Final Score:**", total_score, "out of 175")
+        st.write("**Final Percentage:**", final_percentage, "%")
         
        
