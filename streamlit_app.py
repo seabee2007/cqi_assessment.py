@@ -413,152 +413,122 @@ if st.button("Print Full Report", key="print_full_report"):
       <tr>
         <td>Item 1 – Self Assessment</td>
         <td>{'2' if item1=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 2 – Self Assessment Submission</td>
         <td>{'2' if item2=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 3 – Notice to Proceed (NTP)</td>
         <td>{'4' if item3=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 4 – Project Schedule</td>
         <td>{item4_score}</td>
-        
       </tr>
       <tr>
         <td>Item 5 – Project Management</td>
         <td>{'2' if item5=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 6 – QA for 30 NCR Detail Sites</td>
         <td>{item6}</td>
-        
       </tr>
       <tr>
         <td>Item 7 &amp; 8 – FAR/RFI</td>
         <td>{item78}</td>
-        
       </tr>
       <tr>
         <td>Item 9 – DFOW Sheet</td>
         <td>{item9}</td>
-        
       </tr>
       <tr>
         <td>Item 10 – Turnover Projects</td>
         <td>{item10 if item10!="N/A" else "N/A"}</td>
-        
       </tr>
       <tr>
         <td>Item 11 – Funds Provided</td>
         <td>{'4' if item11=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 12 – Estimate at Completion Cost (EAC)</td>
         <td>{item12}</td>
-        
       </tr>
       <tr>
         <td>Item 13 – Current Expenditures</td>
         <td>{item13}</td>
-        
       </tr>
       <tr>
         <td>Item 14 – Project Material Status Report (PMSR)</td>
         <td>{item14}</td>
-        
       </tr>
       <tr>
         <td>Item 15 – Report Submission</td>
         <td>{'2' if item15=='Yes' else '0'}</td>
-       
       </tr>
       <tr>
         <td>Item 16 – Materials On-Hand</td>
         <td>{item16}</td>
-       
       </tr>
       <tr>
         <td>Item 17 – DD Form 200</td>
         <td>{'2' if item17=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 18 – Borrowed Material Tickler File</td>
         <td>{'2' if item18=='Yes' else '0'}</td>
-        
       </tr>
       <tr>
         <td>Item 19 – Project Brief</td>
         <td>{item19}</td>
-       
       </tr>
       <tr>
         <td>Item 20 – Calculate Manday Capability</td>
         <td>{item20}</td>
-      
       </tr>
       <tr>
         <td>Item 21 – Equipment</td>
         <td>{item21}</td>
-        
       </tr>
       <tr>
         <td>Item 22 – CASS Spot Check</td>
         <td>{item22}</td>
-       
       </tr>
       <tr>
         <td>Item 23 – Designation Letters</td>
         <td>{item23}</td>
-        
       </tr>
       <tr>
         <td>Item 24 – Job Box Review</td>
         <td>{20 - deduction24}</td>
-       
       </tr>
       <tr>
         <td>Item 25 – Review QC Package</td>
         <td>{item25}</td>
-        
       </tr>
       <tr>
         <td>Item 26 – Submittals</td>
         <td>{item26}</td>
-       
       </tr>
       <tr>
         <td>Item 27a – QC Inspection Plan</td>
         <td>{item27a}</td>
-       
       </tr>
       <tr>
         <td>Item 27b – QC Inspection</td>
         <td>{item27b}</td>
-      
       </tr>
       <tr>
         <td>Item 28 – Job Box Review (QC)</td>
         <td>{5 - deduction28}</td>
-        
       </tr>
       <tr>
         <td>Item 29 – Job Box Review (Safety)</td>
         <td>{5 - deduction29}</td>
-        
       </tr>
     """
     
-    # Build the comments section: each comment will start on a new page.
-    # Only include comments that are non-empty.
+    # Build the comments section: all comments will appear together (not each on its own page).
     comment_sections = ""
     comments_list = [
         ("Item 1 – Self Assessment", comment_item1),
@@ -591,11 +561,12 @@ if st.button("Print Full Report", key="print_full_report"):
         ("Item 28 – Job Box Review (QC)", comment_item28),
         ("Item 29 – Job Box Review (Safety)", comment_item29)
     ]
+    # Join all non-empty comments together in one section.
     for item, comment in comments_list:
         if comment and comment.strip():
             comment_sections += f"""
-            <div class="page-break">
-              <h3>{item} - Comment</h3>
+            <div>
+              <h4>{item} - Comment</h4>
               <p>{comment}</p>
             </div>
             """
@@ -630,7 +601,6 @@ if st.button("Print Full Report", key="print_full_report"):
           <tr>
             <th>Item</th>
             <th>Score</th>
-            
           </tr>
           {assessment_rows}
         </table>
@@ -645,15 +615,18 @@ if st.button("Print Full Report", key="print_full_report"):
         <h4>30 NCR Signature:</h4>
         <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
         
-        <!-- Page break before starting comments -->
+        <!-- Single page break before starting comments -->
         <div class="page-break"></div>
         
         <h3>Comments</h3>
         {comment_sections}
         
-       
+        <script>
+          window.onload = function() {{
+             window.print();
+          }};
+        </script>
       </body>
     </html>
     """
     components.html(html_content, height=900)
-
