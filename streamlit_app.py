@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import datetime
 import io
+import emoji
 import base64
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
