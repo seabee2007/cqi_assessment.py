@@ -580,8 +580,7 @@ if st.button("Print Full Report", key="print_full_report"):
           th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
           th {{ background-color: #f2f2f2; }}
           /* Add a bottom border only for the first two cells in each row */
-          .assessment-table tr td:nth-child(1),
-          .assessment-table tr td:nth-child(2) {{
+          .assessment-table tr td:nth-child(1) {{
           border-bottom: 2px solid #000;
           }}
           .signature {{ border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }}
