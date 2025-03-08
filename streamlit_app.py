@@ -387,7 +387,7 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
 st.markdown(
     """
     <div class="no-print" style="text-align: center; margin-top: 20px;">
-      <button onclick="window.print();" 
+      <button onclick="window.top.print(); return false;" 
               style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size:16px; cursor: pointer;">
         Print This Page
       </button>
