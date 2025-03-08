@@ -398,3 +398,19 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+if st.button("Print This Page"):
+    st.components.v1.html(
+        """
+        <html>
+          <head>
+            <script>
+              window.print();
+            </script>
+          </head>
+          <body></body>
+        </html>
+        """,
+        height=0,
+    )
+
