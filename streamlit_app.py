@@ -597,7 +597,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Start Date:</strong> {start}</p>
         <p><strong>Planned Start:</strong> {planned_start_str}</p>
         <p><strong>Planned Completion:</strong> {planned_completion_str}</p>
-        <p><strong>Actual Completion:</strong> {actual_completion_str}</p>
+       
         
         <h3>Assessment Details</h3>
         <table class="assessment-table">
