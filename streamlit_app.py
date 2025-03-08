@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 import datetime
 
 # -------------------------------------------------------------------
-# Helper Functions
+# Helper Function
 # -------------------------------------------------------------------
 def sanitize(text):
     """Replace problematic Unicode dashes with a standard hyphen."""
@@ -12,7 +12,8 @@ def sanitize(text):
     return text
 
 # -------------------------------------------------------------------
-# Handbook Amplifying Info for Items 1–29 (sample text; update as needed)
+# Handbook Amplifying Info for Items 1–29
+# (Update these strings as needed to match your official CQI Handbook.)
 # -------------------------------------------------------------------
 handbook_info = {
     "Item 1 – Self Assessment": "Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)",
@@ -47,7 +48,7 @@ handbook_info = {
 }
 
 # -------------------------------------------------------------------
-# Function to generate the print-friendly HTML
+# Function to generate a print-friendly HTML form
 # -------------------------------------------------------------------
 def generate_html(form_data, handbook_info):
     html = f"""
@@ -124,7 +125,7 @@ def generate_html(form_data, handbook_info):
             <span class="score">{score}</span>
           </div>
         """
-        if comment.strip():
+        if str(comment).strip():
             html += f"""
           <div class="comment">COMMENT: {comment}</div>
             """
@@ -144,109 +145,53 @@ def generate_html(form_data, handbook_info):
     return html
 
 # -------------------------------------------------------------------
-# Main App – Data Input Section
+# Main App – Data Input
 # -------------------------------------------------------------------
 st.title("CQI Assessment Tool - Printable Form")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
-st.write("Fill out your project and checklist data. When ready, click the button below to generate a print-friendly form. Then, use your browser’s print function (Ctrl+P / Cmd+P) to print or save as PDF.")
+st.write("Enter your project and checklist data below. When finished, click the 'Generate Printable Form' button and then use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
 
 # --- Project Information ---
 st.header("Project Information")
-proj_name = st.text_input("Project Name:", key="proj_name")
-battalion = st.text_input("Battalion Name:", key="battalion")
-start_date = st.date_input("Start Date:", key="start_date")
-planned_start = st.date_input("Planned Start Date:", key="planned_start")
-planned_completion = st.date_input("Planned Completion Date:", key="planned_completion")
-actual_completion = st.date_input("Actual Completion Date:", key="actual_completion")
+proj_name = st.text_input("Project Name:")
+battalion = st.text_input("Battalion Name:")
+start_date = st.date_input("Start Date:")
+planned_start = st.date_input("Planned Start Date:")
+planned_completion = st.date_input("Planned Completion Date:")
+actual_completion = st.date_input("Actual Completion Date:")
 
-# --- Assessment Inputs ---
-st.header("Assessment Inputs")
-
-# Item 1
-st.subheader("Item 1 – Self Assessment")
-st.info(handbook_info["Item 1 – Self Assessment"])
-item1 = st.radio("Response:", options=["Yes", "No"], key="item1")
-comment_item1 = st.text_area("Comment (if not perfect):", key="Comment for Item 1") if item1 != "Yes" else ""
-
-# Item 2
-st.subheader("Item 2 – Self Assessment Submission")
-st.info(handbook_info["Item 2 – Self Assessment Submission"])
-item2 = st.radio("Response:", options=["Yes", "No"], key="item2")
-comment_item2 = st.text_area("Comment (if not perfect):", key="Comment for Item 2") if item2 != "Yes" else ""
-
-# Item 3
-st.subheader("Item 3 – Notice to Proceed (NTP)")
-st.info(handbook_info["Item 3 – Notice to Proceed (NTP)"])
-item3 = st.radio("Response:", options=["Yes", "No"], key="item3")
-comment_item3 = st.text_area("Comment (if not perfect):", key="Comment for Item 3") if item3 != "Yes" else ""
-
-# Item 4 – Project Schedule (sample calculation)
-st.subheader("Item 4 – Project Schedule")
-st.info(handbook_info["Item 4 – Project Schedule"])
-st.markdown("Score is based on the difference between planned and actual work-in-place. Exact = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts.")
-total_md = st.number_input("Total Project Mandays:", value=1000, step=1, key="total_md")
-planned_wip = st.number_input("Planned Work-in-Place (%)", value=100, step=1, key="planned_wip")
-actual_wip = st.number_input("Actual Work-in-Place (%)", value=100, step=1, key="actual_wip")
-if total_md < 1000:
-    allowed = 10
-elif total_md < 2000:
-    allowed = 5
-else:
-    allowed = 2.5
-diff = abs(actual_wip - planned_wip)
-if diff == 0:
-    item4_score = 16
-elif diff <= allowed:
-    item4_score = 12
-else:
-    item4_score = 4
-st.write(f"Calculated Score for Item 4: {item4_score}")
-comment_item4 = st.text_area("Comment (if not perfect):", key="Comment for Item 4") if item4_score != 16 else ""
-
-# For demonstration, we'll loop through sample items for Items 5–29.
-sample_items = [
-    "Item 5 – Project Management", "Item 6 – QA for 30 NCR Detail Sites", 
-    "Item 7 & 8 – FAR/RFI", "Item 9 – DFOW Sheet", "Item 10 – Turnover Projects",
-    "Item 11 – Funds Provided", "Item 12 – Estimate at Completion Cost (EAC)",
-    "Item 13 – Current Expenditures", "Item 14 – Project Material Status Report (PMSR)",
-    "Item 15 – Report Submission", "Item 16 – Materials On-Hand", "Item 17 – DD Form 200",
-    "Item 18 – Borrowed Material Tickler File", "Item 19 – Project Brief",
-    "Item 20 – Calculate Manday Capability", "Item 21 – Equipment",
-    "Item 22 – CASS Spot Check", "Item 23 – Designation Letters",
-    "Item 24 – Job Box Review", "Item 25 – Review QC Package",
-    "Item 26 – Submittals", "Item 27a – QC Inspection Plan", "Item 27b – QC Inspection",
-    "Item 28 – Job Box Review (QC)", "Item 29 – Job Box Review (Safety)"
-]
-for item in sample_items:
-    st.subheader(item)
-    st.info(handbook_info.get(item, ""))
-    resp = st.text_input("Response (score):", value="Sample Score", key=item)
-    comm = st.text_area("Comment (if any):", key=f"Comment for {item}")
-    
-# For demonstration, set final scores.
-final_score = 166
-final_percentage = 94.9
-
-# Build the form_data dictionary.
+# Initialize form_data with project info.
 form_data = {
     "Project Name": proj_name,
     "Battalion": battalion,
     "Start Date": str(start_date),
     "Planned Start": str(planned_start),
     "Planned Completion": str(planned_completion),
-    "Actual Completion": str(actual_completion),
-    "Item 1 – Self Assessment": item1,
-    "Comment for Item 1": comment_item1,
-    "Item 2 – Self Assessment Submission": item2,
-    "Comment for Item 2": comment_item2,
-    "Item 3 – Notice to Proceed (NTP)": item3,
-    "Comment for Item 3": comment_item3,
-    "Item 4 – Project Schedule": str(item4_score),
-    "Comment for Item 4": comment_item4,
-    "Final Score": final_score,
-    "Final Percentage": final_percentage,
+    "Actual Completion": str(actual_completion)
 }
-# (In your full implementation, ensure form_data includes responses for Items 5–29 as well.)
+
+# --- Assessment Inputs ---
+st.header("Assessment Inputs")
+# Loop through each checklist item defined in handbook_info.
+for item in handbook_info:
+    st.subheader(item)
+    st.info(handbook_info[item])
+    # Use number_input for numeric score.
+    score = st.number_input(f"Enter score for {item}:", key=item, format="%g")
+    comment = st.text_area(f"Enter comment for {item} (if any):", key="Comment for " + item)
+    form_data[item] = score
+    form_data["Comment for " + item] = comment
+
+# Calculate final score.
+# (This calculation assumes that each score is numeric.
+# Adjust the logic as needed for your business rules.)
+total_score = sum(form_data[item] for item in handbook_info if isinstance(form_data[item], (int, float)))
+final_percentage = round(total_score / 175 * 100, 1)
+form_data["Final Score"] = total_score
+form_data["Final Percentage"] = final_percentage
+
+st.write(f"Final Score: {total_score} out of 175")
+st.write(f"Final Percentage: {final_percentage}%")
 
 if st.button("Generate Printable Form"):
     html_output = generate_html(form_data, handbook_info)
