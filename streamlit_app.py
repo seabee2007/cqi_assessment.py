@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import datetime
 import io
 import base64
+import emoji
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
 
@@ -105,8 +106,6 @@ handbook_info = {
 #       CALC - app
 #------------------------------------------------------------------------
 
-import streamlit as st
-import emoji
 
 # Set title
 st.title("Calculator")
