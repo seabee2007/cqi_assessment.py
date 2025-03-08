@@ -575,14 +575,20 @@ if st.button("Print Full Report", key="print_full_report"):
     <html>
       <head>
         <style>
-          body {{ font-family: Arial, sans-serif; margin: 20px; }}
-          table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-          th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
-          th {{ background-color: #f2f2f2; }}
-          .signature {{ border: 1px solid #000; width: 400px; height: 75px; display: block; margin-bottom: 20px; }}
-          h2, h3, h4 {{ text-align: left; }}
-          .page-break {{ page-break-before: always; }}
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+          th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          /* Add a bottom border only for the first two cells in each row */
+          .assessment-table tr td:nth-child(1),
+          .assessment-table tr td:nth-child(2) {
+          border-bottom: 2px solid #000;
+          }
+          .signature { border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }
+          h2, h3, h4 { text-align: center; }
+          .page-break { page-break-before: always; }
         </style>
+
       </head>
       <body>
         <h2>Construction Quality Inspection Report</h2>
@@ -597,7 +603,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Actual Completion:</strong> {actual_completion_str}</p>
         
         <h3>Assessment Details</h3>
-        <table>
+        <table class="assessment-table">
           <tr>
             <th>Item</th>
             <th>Score</th>
