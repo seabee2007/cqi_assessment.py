@@ -340,37 +340,7 @@ if st.button("Calculate Final Score"):
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
-# Wrap your content in a div via markdown (place it at the top of your app):
-st.markdown(
-    """
-    <div id="printable-content">
-      <!-- Your entire form and output can be rendered here if you can consolidate it -->
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
-# Then use a print button that opens a new window with only that content:
-if st.button("Print This Form"):
-    st.components.v1.html(
-        """
-        <script>
-          // Extract only the printable content
-          var content = document.getElementById("printable-content").innerHTML;
-          var printWindow = window.open("", "PrintWindow", "height=600,width=800");
-          printWindow.document.write('<html><head><title>Print</title></head><body>');
-          printWindow.document.write(content);
-          printWindow.document.write('</body></html>');
-          printWindow.document.close();
-          printWindow.focus();
-          printWindow.onload = function(){
-              printWindow.print();
-              printWindow.close();
-          };
-        </script>
-        """,
-        height=600,
-    )
 
 
 
