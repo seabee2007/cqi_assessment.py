@@ -389,7 +389,6 @@ with st.form("signature_form"):
         st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
         st.success("Signatures Saved!")
 
-# --- Print Full Report Button ---
 if st.button("Print Full Report", key="print_full_report"):
     # Retrieve final score data
     final_score = st.session_state.get("final_score", "N/A")
@@ -558,7 +557,8 @@ if st.button("Print Full Report", key="print_full_report"):
       </tr>
     """
     
-    # Build separate comment sections (each on its own page)
+    # Build the comments section: each comment will start on a new page.
+    # Only include comments that are non-empty.
     comment_sections = ""
     comments_list = [
         ("Item 1 – Self Assessment", comment_item1),
@@ -591,7 +591,6 @@ if st.button("Print Full Report", key="print_full_report"):
         ("Item 28 – Job Box Review (QC)", comment_item28),
         ("Item 29 – Job Box Review (Safety)", comment_item29)
     ]
-    # For each item, if there is a comment (non-empty), add a new section with a page break.
     for item, comment in comments_list:
         if comment and comment.strip():
             comment_sections += f"""
@@ -646,6 +645,9 @@ if st.button("Print Full Report", key="print_full_report"):
         <h4>30 NCR Signature:</h4>
         <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
         
+        <!-- Page break before starting comments -->
+        <div class="page-break"></div>
+        
         <h3>Comments</h3>
         {comment_sections}
         
@@ -658,3 +660,4 @@ if st.button("Print Full Report", key="print_full_report"):
     </html>
     """
     components.html(html_content, height=900)
+
