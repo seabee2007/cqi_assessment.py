@@ -579,7 +579,7 @@ if st.button("Print Full Report", key="print_full_report"):
           table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
           th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
           th {{ background-color: #f2f2f2; }}
-          .signature {{ border: 1px solid #000; width: 500px; height: 150px; display: block; margin-bottom: 20px; }}
+          .signature {{ border: 1px solid #000; width: 400px; height: 75px; display: block; margin-bottom: 20px; }}
           h2, h3, h4 {{ text-align: left; }}
           .page-break {{ page-break-before: always; }}
         </style>
