@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import datetime
 import io
 import os
+from streamlit_drawable_canvas import st_canvas  # Added for signature blocks
 
 # -------------------------------------------------------------------
 # Print-specific CSS (injected at the top)
@@ -398,13 +399,13 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         # Save results and project info to session state.
         st.session_state.final_score = total_score
         st.session_state.final_percentage = final_percentage
-      #  st.session_state.proj_name = proj_name_input
-      #  st.session_state.battalion = battalion_input
+        # Uncomment the following lines if you want to display these at the top:
+        # st.session_state.proj_name = proj_name_input
+        # st.session_state.battalion = battalion_input
         
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
-
 
 # -------------------------------------------------------------------
 # Print instructions using a widget button
@@ -418,3 +419,31 @@ if st.button("Print This Page", key="print_button"):
         """,
         height=0,
     )
+
+# -------------------------------------------------------------------
+# Signature Blocks
+# -------------------------------------------------------------------
+st.header("Signatures")
+st.markdown("#### OIC Signature")
+canvas_result_oic = st_canvas(
+    fill_color="rgba(255, 165, 0, 0.3)",  # Optional: fill with transparency
+    stroke_width=2,
+    stroke_color="#000000",
+    background_color="#FFF",
+    height=150,
+    width=500,
+    drawing_mode="freedraw",
+    key="oic_signature"
+)
+
+st.markdown("#### 30 NCR Signature")
+canvas_result_30ncr = st_canvas(
+    fill_color="rgba(255, 165, 0, 0.3)",
+    stroke_width=2,
+    stroke_color="#000000",
+    background_color="#FFF",
+    height=150,
+    width=500,
+    drawing_mode="freedraw",
+    key="ncr_signature"
+)
