@@ -608,7 +608,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <h3>Final Score</h3>
         <p><strong>Final Score:</strong> {final_score} out of 175</p>
         <p><strong>Final Percentage:</strong> {final_percentage}%</p>
-        <div class="page-break"></div>
+        
         <h3>Signatures</h3>
         <h4>OIC Signature:</h4>
         <img src="data:image/png;base64,{oic_base64}" class="signature"/>
@@ -621,14 +621,6 @@ if st.button("Print Full Report", key="print_full_report"):
         <h3>Comments</h3>
         {comment_sections}
         
-        <h3>Signatures</h3>
-        <h4>OIC Signature:</h4>
-        <img src="data:image/png;base64,{oic_base64}" class="signature"/>
-        <h4>30 NCR Signature:</h4>
-        <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
-        
-        <!-- Single page break before starting comments -->
-        <div class="page-break"></div>
         <script>
           window.onload = function() {{
              window.print();
