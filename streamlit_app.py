@@ -107,7 +107,7 @@ yes_no_scores = {
 }
 
 # -------------------------------------------------------------------
-# Function to generate a print-friendly HTML form
+# Function to generate a print-friendly HTML form (for printing purposes)
 # -------------------------------------------------------------------
 def generate_html(form_data, handbook_info, perfect_scores):
     html = f"""
@@ -177,7 +177,7 @@ def generate_html(form_data, handbook_info, perfect_scores):
     for item, info in handbook_info.items():
         score = form_data.get(item, "")
         comment = form_data.get(f"Comment for {item}", "")
-        # Only display comment block if the numeric score is below the perfect score.
+        # Only display the comment block if the numeric score is below the perfect score.
         display_comment = False
         try:
             numeric_score = float(score)
@@ -266,4 +266,16 @@ numeric_scores = [form_data[item] for item in handbook_info if isinstance(form_d
 total_score = sum(numeric_scores)
 final_percentage = round(total_score / 175 * 100, 1)
 form_data["Final Score"] = total_score
-form_data["Final Percentage"]
+form_data["Final Percentage"] = final_percentage
+
+st.write(f"Final Score: {total_score} out of 175")
+st.write(f"Final Percentage: {final_percentage}%")
+st.success("Final Score Calculated!")
+st.write("**Final Score:**", total_score, "out of 175")
+st.write("**Final Percentage:**", final_percentage, "%")
+
+# Generate the printable HTML form and display it in the app.
+if st.button("Generate Printable Form"):
+    html_output = generate_html(form_data, handbook_info, perfect_scores)
+    components.html(html_output, height=600, scrolling=True)
+    st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
