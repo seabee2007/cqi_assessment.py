@@ -98,7 +98,7 @@ st.write("Fill out the fields below. For any item that does not achieve the perf
 st.header("Project Information")
 proj_name_input = st.text_input("Project Name:", key="proj_name_input")
 battalion_input = st.text_input("Battalion:", key="battalion_input")
-oic_name_input = st.text_input("OIC Name:", key="oic_name_input")
+oic_name_input = st.text_input("OIC:", key="oic_name_input")
 aoic_input = st.text_input("AOIC:", key="aoic_input")
 start_date = st.date_input("Start Date:", key="start_date_input")
 planned_start = st.date_input("Planned Start Date:", key="planned_start_input")
@@ -424,7 +424,11 @@ if st.button("Print This Page", key="print_button"):
 # Signature Blocks
 # -------------------------------------------------------------------
 st.header("Signatures")
+
+# For OIC Signature
 st.markdown("#### OIC Signature")
+# Retrieve previously stored drawing if it exists.
+initial_oic = st.session_state.get("oic_signature_data", None)
 canvas_result_oic = st_canvas(
     fill_color="rgba(255, 165, 0, 0.3)",  # Optional: fill with transparency
     stroke_width=2,
@@ -433,10 +437,16 @@ canvas_result_oic = st_canvas(
     height=150,
     width=500,
     drawing_mode="freedraw",
-    key="oic_signature"
+    key="oic_signature",
+    initial_drawing=initial_oic  # Preload existing drawing if available
 )
+# Save the drawing to session state if drawn.
+if canvas_result_oic.image_data is not None:
+    st.session_state.oic_signature_data = canvas_result_oic.image_data
 
+# For 30 NCR Signature
 st.markdown("#### 30 NCR Signature")
+initial_ncr = st.session_state.get("ncr_signature_data", None)
 canvas_result_30ncr = st_canvas(
     fill_color="rgba(255, 165, 0, 0.3)",
     stroke_width=2,
@@ -445,5 +455,8 @@ canvas_result_30ncr = st_canvas(
     height=150,
     width=500,
     drawing_mode="freedraw",
-    key="ncr_signature"
+    key="ncr_signature",
+    initial_drawing=initial_ncr
 )
+if canvas_result_30ncr.image_data is not None:
+    st.session_state.ncr_signature_data = canvas_result_30ncr.image_data
