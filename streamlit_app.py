@@ -402,7 +402,7 @@ if st.button("Print Full Report", key="print_full_report"):
     start = start_date.strftime("%Y-%m-%d") if isinstance(start_date, datetime.date) else start_date
     planned_start_str = planned_start.strftime("%Y-%m-%d") if isinstance(planned_start, datetime.date) else planned_start
     planned_completion_str = planned_completion.strftime("%Y-%m-%d") if isinstance(planned_completion, datetime.date) else planned_completion
-    actual_completion_str = actual_completion.strftime("%Y-%m-%d") if isinstance(actual_completion, datetime.date) else actual_completion
+    
     
     # Convert signature canvas image data to base64 images
     oic_base64 = image_to_base64(canvas_result_oic.image_data)
