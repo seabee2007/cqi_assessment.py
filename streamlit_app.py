@@ -105,13 +105,7 @@ handbook_info = {
 #-----------------------------------------------------------------------
 #       CALC - app
 #------------------------------------------------------------------------
-import streamlit as st
-import emoji
 
-st.set_page_config(
-    page_title='KenGik Calculator - Basic Edition',
-    page_icon='🧮'
-)
 
 # ------------------ Session State Initialization ------------------
 if 'result' not in st.session_state:
