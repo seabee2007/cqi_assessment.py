@@ -413,12 +413,12 @@ if st.button("Print Full Report", key="print_full_report"):
       <tr>
         <td>Item 1 – Self Assessment</td>
         <td>{'2' if item1=='Yes' else '0'}</td>
-        <td>{comment_item1}</td>
+        
       </tr>
       <tr>
         <td>Item 2 – Self Assessment Submission</td>
         <td>{'2' if item2=='Yes' else '0'}</td>
-        <td>{comment_item2}</td>
+        
       </tr>
       <tr>
         <td>Item 3 – Notice to Proceed (NTP)</td>
