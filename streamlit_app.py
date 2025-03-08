@@ -568,7 +568,7 @@ assessment_rows = f"""
     # (Repeat for Items 4 through 29 as needed.)
     
     # Build the full HTML content
-    html_content = f"""
+html_content = f"""
     <html>
       <head>
         <style>
