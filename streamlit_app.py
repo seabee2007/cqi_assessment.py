@@ -35,126 +35,91 @@ def wrap_text(pdf, text, cell_width):
 # (Sample text; adjust as needed.)
 handbook_info = {
     "Item 1 – Self Assessment": (
-        "Has the unit completed an initial self-assessment CQI checklist? "
-        "Yes = 2 points or No = 0 points."
+        "Has the unit completed an initial self-assessment CQI checklist? Yes = 2 points or No = 0 points."
     ),
     "Item 2 – Self Assessment Submission": (
-        "Were the results of the self-assessment submitted to 30 NCR SharePoint "
-        "no later than 7-days prior to inspection? Yes = 2 points or No = 0 points."
+        "Were the self-assessment results submitted to 30 NCR SharePoint no later than 7-days prior to inspection? Yes = 2 points or No = 0 points."
     ),
     "Item 3 – Notice to Proceed (NTP)": (
-        "Has a project confirmation or turnover brief been conducted with 30 NCR "
-        "resulting in receiving a NTP? Yes = 4 points or No = 0 points."
+        "Has a project confirmation or turnover brief been conducted with 30 NCR resulting in receiving a NTP? Yes = 4 points or No = 0 points."
     ),
     "Item 4 – Project Schedule": (
-        "Is the unit achieving the given tasking? Project on exact schedule = 16 points; "
-        "Within allowable deviation = 12 points; Outside allowable deviation = 4 points; "
-        "Not monitored = 0 points. Allowable deviations are based on total project Mandays."
+        "Is the unit achieving the given tasking? Project on exact schedule = 16 points; Within allowable deviation = 12 points; Outside allowable deviation = 4 points; Not monitored = 0 points. Allowable deviations are based on total project Mandays."
     ),
     "Item 5 – Project Management": (
-        "Is a project management tool/CPM being utilized to track progress and scheduling? "
-        "Yes = 2 points or No = 0 points."
+        "Is a project management tool/CPM being utilized to track progress and scheduling? Yes = 2 points or No = 0 points."
     ),
     "Item 6 – QA for 30 NCR Detail Sites": (
-        "QA involvement: Zero discrepancies = 4 points; Acceptable or recommendations = 3 points; "
-        "Reports not detailed or multiple discrepancies = 2 points; No QA involvement = 0 points."
+        "QA involvement: Zero discrepancies = 4 points; Acceptable or recommendations = 3 points; Reports not detailed or multiple discrepancies = 2 points; No QA involvement = 0 points."
     ),
     "Item 7 & 8 – FAR/RFI": (
-        "Inspect FAR/RFI log for continuity over the project’s life. "
-        "100% up-to-date/all logged = 4 points; Acceptable with recommendations = 3 points; "
-        "Missing/not logged = 2 points; Not tracked = 0 points."
+        "Inspect FAR/RFI log for continuity over the project’s life. 100% up-to-date/all logged = 4 points; Acceptable with recommendations = 3 points; Missing/not logged = 2 points; Not tracked = 0 points."
     ),
     "Item 9 – DFOW Sheet": (
-        "Ensure the DFOW sheet is accurate and updated. "
-        "Accurate/up-to-date = 4 points; Acceptable with recommendations = 3 points; "
-        "Missing/incorrect = 2 points; Blank/missing = 0 points."
+        "Ensure the DFOW sheet is accurate and updated. Accurate/up-to-date = 4 points; Acceptable with recommendations = 3 points; Missing/incorrect = 2 points; Blank/missing = 0 points."
     ),
     "Item 10 – Turnover Projects": (
-        "Review turnover memorandum: All discrepancies identified post-turnover must be validated and classified. "
-        "If validated and rework plan established = 4 points; No documentation = 0 points."
+        "Review turnover memorandum: All discrepancies identified post-turnover must be validated and classified. If validated and rework plan established = 4 points; No documentation = 0 points."
     ),
     "Item 11 – Funds Provided": (
-        "Validate that project funding is tracked via funding documents. "
-        "Monitored = 4 points; Not monitored = 0 points."
+        "Validate that project funding is tracked via funding documents. Monitored = 4 points; Not monitored = 0 points."
     ),
     "Item 12 – Estimate at Completion Cost (EAC)": (
-        "EAC must include all expenditures and estimates. "
-        "Monitored and accurate = 4 points; Acceptable (89%-80% accuracy) = 3 points; "
-        "Within 79%-60% accuracy = 2 points; ≤59% accuracy = 0 points."
+        "EAC must include all expenditures and estimates. Monitored and accurate = 4 points; Acceptable (89%-80% accuracy) = 3 points; Within 79%-60% accuracy = 2 points; ≤59% accuracy = 0 points."
     ),
     "Item 13 – Current Expenditures": (
-        "Verify exact amounts expended on the project. "
-        "Accurate = 4 points; Acceptable = 3 points; Discrepancies = 2 points; ≤59% accuracy = 0 points."
+        "Verify exact amounts expended on the project. Accurate = 4 points; Acceptable = 3 points; Discrepancies = 2 points; ≤59% accuracy = 0 points."
     ),
     "Item 14 – Project Material Status Report (PMSR)": (
-        "Inspect PMSR for completeness and accuracy. "
-        "Updated and accurate = 10 points; Acceptable (99%-90% validity) = 8 points; "
-        "Multiple discrepancies = 4 points; Class IV not tracked = 2 points; ≤59% validity = 0 points."
+        "Inspect PMSR for completeness and accuracy. Updated and accurate = 10 points; Acceptable (99%-90% validity) = 8 points; Multiple discrepancies = 4 points; Class IV not tracked = 2 points; ≤59% validity = 0 points."
     ),
     "Item 15 – Report Submission": (
-        "Confirm PMSR and EAC reports are routed monthly. "
-        "Routed = 2 points; Not routed = 0 points."
+        "Confirm PMSR and EAC reports are routed monthly. Routed = 2 points; Not routed = 0 points."
     ),
     "Item 16 – Materials On-Hand": (
-        "Ensure materials on-hand are managed and verified. "
-        "Organized and verified = 10 points; Minor discrepancies = 8 points; "
-        "Multiple discrepancies = 4 points; Unsatisfactory = 0 points."
+        "Ensure materials on-hand are managed and verified. Organized and verified = 10 points; Minor discrepancies = 8 points; Multiple discrepancies = 4 points; Unsatisfactory = 0 points."
     ),
     "Item 17 – DD Form 200": (
-        "Verify DD Form 200’s are correct and valid. "
-        "Correct = 2 points; Not maintained = 0 points."
+        "Verify DD Form 200’s are correct and valid. Correct = 2 points; Not maintained = 0 points."
     ),
     "Item 18 – Borrowed Material Tickler File": (
-        "Inspect borrowed material files for proper approval and documentation. "
-        "Valid and approved = 2 points; Not managed properly = 0 points."
+        "Inspect borrowed material files for proper approval and documentation. Valid and approved = 2 points; Not managed properly = 0 points."
     ),
     "Item 19 – Project Brief": (
-        "Review the project brief for detail and ownership. "
-        "Detailed and comprehensive = 5 points; Acceptable = 3 points; "
-        "Not detailed = 2 points; Substandard = 0 points."
+        "Review the project brief for detail and ownership. Detailed and comprehensive = 5 points; Acceptable = 3 points; Not detailed = 2 points; Substandard = 0 points."
     ),
     "Item 20 – Calculate Manday Capability": (
-        "Verify that crew composition and MD capability meet tasking requirements. "
-        "Match = 6 points; Acceptable = 4 points; Not appropriate = 2 points; No alignment = 0 points."
+        "Verify that crew composition and MD capability meet tasking requirements. Match = 6 points; Acceptable = 4 points; Not appropriate = 2 points; No alignment = 0 points."
     ),
     "Item 21 – Equipment": (
-        "Validate that required equipment is onsite and scheduled appropriately. "
-        "All required equipment onsite = 6 points; Acceptable = 4 points; Inadequate = 2 points; Not onsite = 0 points."
+        "Validate that required equipment is onsite and scheduled appropriately. All required equipment onsite = 6 points; Acceptable = 4 points; Inadequate = 2 points; Not onsite = 0 points."
     ),
     "Item 22 – CASS Spot Check": (
-        "Inspect CASS for adherence to prints and specifications. "
-        "100% IAW = 12 points; Acceptable = 8 points; Multiple discrepancies = 4 points; Not documented = 0 points."
+        "Inspect CASS for adherence to prints and specifications. 100% IAW = 12 points; Acceptable = 8 points; Multiple discrepancies = 4 points; Not documented = 0 points."
     ),
     "Item 23 – Designation Letters": (
-        "Check that designation letters are up-to-date and signed. "
-        "Current and signed = 5 points; Not up-to-date = 3 points; Missing = 0 points."
+        "Check that designation letters are up-to-date and signed. Current and signed = 5 points; Not up-to-date = 3 points; Missing = 0 points."
     ),
     "Item 24 – Job Box Review": (
-        "Review jobsite board items per NTRP guidelines. "
-        "All items accurate/up-to-date = 20 points; For discrepancies, subtract specified points."
+        "Review jobsite board items per NTRP guidelines. All items accurate/up-to-date = 20 points; For discrepancies, subtract specified points."
     ),
     "Item 25 – Review QC Package": (
-        "Ensure QC reports are comprehensive and follow approved specifications. "
-        "Comprehensive = 8 points; Acceptable = 6 points; Not detailed = 4 points; No QC evidence = 0 points."
+        "Ensure QC reports are comprehensive and follow approved specifications. Comprehensive = 8 points; Acceptable = 6 points; Not detailed = 4 points; No QC evidence = 0 points."
     ),
     "Item 26 – Submittals": (
-        "Validate that material submittals are current and properly logged. "
-        "Current and logged = 4 points; Not current = 2 points; Not submitted = 0 points."
+        "Validate that material submittals are current and properly logged. Current and logged = 4 points; Not current = 2 points; Not submitted = 0 points."
     ),
     "Item 27a – QC Inspection Plan": (
-        "Check that the QC inspection plan includes quantifiable measures. "
-        "100% quantifiable = 10 points; 99%-85% = 7 points; 84%-70% = 3 points; >70% = 0 points."
+        "Check that the QC inspection plan includes quantifiable measures. 100% quantifiable = 10 points; 99%-85% = 7 points; 84%-70% = 3 points; >70% = 0 points."
     ),
     "Item 27b – QC Inspection": (
         "On-site QC inspection: No discrepancies = 5 points; Discrepancies = 0 points."
     ),
     "Item 28 – Job Box Review (QC)": (
-        "Review QC plan and daily QC reports for completeness. "
-        "Up-to-date = 5 points; For discrepancies, subtract (QC plan missing = 3, gaps = 2)."
+        "Review QC plan and daily QC reports for completeness. Up-to-date = 5 points; For discrepancies, subtract (QC plan missing = 3, gaps = 2)."
     ),
     "Item 29 – Job Box Review (Safety)": (
-        "Review safety plan, daily safety reports, and emergency contacts. "
-        "Emergency contacts up-to-date = 5 points; For discrepancies, subtract (Safety plan missing = 3, reports gaps = 1, missing emergency data = 1)."
+        "Review safety plan, daily safety reports, and emergency contacts. Emergency contacts up-to-date = 5 points; For discrepancies, subtract (Safety plan missing = 3, reports gaps = 1, missing emergency data = 1)."
     )
 }
 
@@ -179,7 +144,9 @@ class PDF(FPDF):
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 # -------------------------------------------------------------------
-# Function to generate the PDF.
+# Function to generate the PDF with two columns:
+# Left column: Item title + amplifying info.
+# Right column: Score and user comments.
 # -------------------------------------------------------------------
 def generate_pdf(handbook_details, form_data):
     pdf = PDF()
@@ -187,87 +154,45 @@ def generate_pdf(handbook_details, form_data):
     pdf.add_page()
     pdf.set_font("DejaVu", "", 12)
     
-    # --- Handbook Amplifying Info Table ---
+    # Define column widths.
     effective_width = pdf.w - pdf.l_margin - pdf.r_margin
-    question_width = effective_width * 0.45    # 45% for item title
-    details_width = effective_width * 0.55       # 55% for amplifying info
+    left_width = effective_width * 0.6    # 60% for item + amplifying info
+    right_width = effective_width * 0.4   # 40% for score and comments
     line_height = 8
-
-    # Header row for the handbook table
-    pdf.cell(question_width, line_height, "Item", border=1, align='C')
-    pdf.cell(details_width, line_height, "Amplifying Info", border=1, align='C')
-    pdf.ln(line_height)
     
-    for item, info in handbook_details.items():
-        item_lines = wrap_text(pdf, item, question_width)
-        info_lines = wrap_text(pdf, info, details_width)
-        max_lines = max(len(item_lines), len(info_lines))
+    # Table header row.
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(left_width, line_height, "Item & Info", border=1, align='C')
+    pdf.cell(right_width, line_height, "Score & Comments", border=1, align='C')
+    pdf.ln(line_height)
+    pdf.set_font("DejaVu", "", 12)
+    
+    # For each item in handbook_info, build left and right cell content.
+    for item, amplifying_info in handbook_details.items():
+        # Left cell: item title + amplifying info.
+        left_text = f"{item}\n{amplifying_info}"
+        # Right cell: build from form_data.
+        comment_key = f"Comment for {item}"
+        # If the item key is not exactly the same in form_data, try using it directly.
+        score = form_data.get(item, "")
+        comment = form_data.get(comment_key, "")
+        right_text = f"Score: {score}"
+        if comment.strip():
+            right_text += f"\nComment: {comment}"
+        
+        # Wrap text for both columns.
+        left_lines = wrap_text(pdf, left_text, left_width)
+        right_lines = wrap_text(pdf, right_text, right_width)
+        max_lines = max(len(left_lines), len(right_lines))
+        # For each line, print both cells.
         for i in range(max_lines):
-            item_text = item_lines[i] if i < len(item_lines) else ""
-            info_text = info_lines[i] if i < len(info_lines) else ""
-            pdf.cell(question_width, line_height, item_text, border=1)
-            pdf.cell(details_width, line_height, info_text, border=1)
+            left_line = left_lines[i] if i < len(left_lines) else ""
+            right_line = right_lines[i] if i < len(right_lines) else ""
+            pdf.cell(left_width, line_height, left_line, border=1)
+            pdf.cell(right_width, line_height, right_line, border=1)
             pdf.ln(line_height)
     
-    # --- Project Information Section ---
-    pdf.ln(5)
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, sanitize("Project Information"), ln=True)
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, sanitize(f"Project Name: {form_data.get('Project Name', '')}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Battalion: {form_data.get('Battalion', '')}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Start Date: {form_data.get('Start Date', '')}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Planned Start: {form_data.get('Planned Start', '')}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Planned Completion: {form_data.get('Planned Completion', '')}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Actual Completion: {form_data.get('Actual Completion', '')}"), ln=True)
-    pdf.ln(5)
-    
-    # --- Assessment Inputs Section ---
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, sanitize("Assessment Inputs"), ln=True)
-    pdf.set_font("Arial", "", 12)
-    
-    # List of tuples: (item_key, comment_key)
-    assessment_items = [
-        ("Item 1 – Self Assessment", "Comment for Item 1"),
-        ("Item 2 – Self Assessment Submission", "Comment for Item 2"),
-        ("Item 3 – Notice to Proceed (NTP)", "Comment for Item 3"),
-        ("Item 4 – Project Schedule", "Comment for Item 4"),
-        ("Item 5 – Project Management", "Comment for Item 5"),
-        ("Item 6 – QA for 30 NCR Detail Sites", "Comment for Item 6"),
-        ("Item 7 & 8 – FAR/RFI", "Comment for Item 7 & 8"),
-        ("Item 9 – DFOW Sheet", "Comment for Item 9"),
-        ("Item 10 – Turnover Projects", "Comment for Item 10"),
-        ("Item 11 – Funds Provided", "Comment for Item 11"),
-        ("Item 12 – Estimate at Completion Cost (EAC)", "Comment for Item 12"),
-        ("Item 13 – Current Expenditures", "Comment for Item 13"),
-        ("Item 14 – Project Material Status Report (PMSR)", "Comment for Item 14"),
-        ("Item 15 – Report Submission", "Comment for Item 15"),
-        ("Item 16 – Materials On-Hand", "Comment for Item 16"),
-        ("Item 17 – DD Form 200", "Comment for Item 17"),
-        ("Item 18 – Borrowed Material Tickler File", "Comment for Item 18"),
-        ("Item 19 – Project Brief", "Comment for Item 19"),
-        ("Item 20 – Calculate Manday Capability", "Comment for Item 20"),
-        ("Item 21 – Equipment", "Comment for Item 21"),
-        ("Item 22 – CASS Spot Check", "Comment for Item 22"),
-        ("Item 23 – Designation Letters", "Comment for Item 23"),
-        ("Item 24 – Job Box Review", "Comment for Item 24"),
-        ("Item 25 – Review QC Package", "Comment for Item 25"),
-        ("Item 26 – Submittals", "Comment for Item 26"),
-        ("Item 27a – QC Inspection Plan", "Comment for Item 27a"),
-        ("Item 27b – QC Inspection", "Comment for Item 27b"),
-        ("Item 28 – Job Box Review (QC)", "Comment for Item 28"),
-        ("Item 29 – Job Box Review (Safety)", "Comment for Item 29"),
-    ]
-    
-    for item_key, comment_key in assessment_items:
-        response = form_data.get(item_key, "")
-        pdf.multi_cell(0, 10, sanitize(f"{item_key}: {response}"))
-        comment = form_data.get(comment_key, "")
-        if comment:
-            pdf.multi_cell(0, 10, sanitize(f"--> Comment: {comment}"))
-        pdf.ln(1)
-    
+    # --- Final Results Section ---
     pdf.ln(5)
     pdf.set_font("Arial", "B", 14)
     pdf.cell(0, 10, sanitize("Final Results"), ln=True)
@@ -280,6 +205,15 @@ def generate_pdf(handbook_details, form_data):
     pdf_buffer = io.BytesIO(pdf_bytes)
     pdf_buffer.seek(0)
     return pdf_buffer
+
+# -------------------------------------------------------------------
+# Display Amplifying Info on the App
+# -------------------------------------------------------------------
+st.header("Amplifying Info for Each Item")
+st.write("Click an item to view its detailed amplifying information from the CQI Handbook.")
+for item, info in handbook_info.items():
+    with st.expander(item):
+        st.write(info)
 
 # -------------------------------------------------------------------
 # Main App – fields update in real time.
@@ -488,7 +422,6 @@ if item23 != 5:
 # Item 24 – Job Box Review
 st.subheader("Item 24 – Job Box Review")
 item24 = st.selectbox("Select score for Item 24 (20, deduct as needed):", options=[20, 0], key="item24")
-# For Item 24, assume deductions are entered separately
 deduction24 = st.number_input("Enter deduction for Item 24 (0 to 20):", min_value=0, max_value=20, value=0, step=1, key="deduction24")
 calculated_item24 = 20 - deduction24
 comment_item24 = ""
@@ -618,7 +551,7 @@ if st.button("Calculate Final Score"):
         score17 = 2 if item17 == "Yes" else 0
         score18 = 2 if item18 == "Yes" else 0
         
-        # For items with selectbox scores, use the numeric value
+        # Total score calculation (sample; extend to include all items as needed)
         total_score = (
             score1 + score2 + score3 + item4_score + score5 +
             item6 + item78 + item9 +
