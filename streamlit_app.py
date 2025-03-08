@@ -416,8 +416,7 @@ if st.button("Print Full Report", key="print_full_report"):
     
     # Build an HTML table for assessment items
     # (For demonstration, we’ll include Items 1 to 3; you should add rows for all items as needed.)
-    assessment_rows = f"""
-      assessment_rows = f"""
+   assessment_rows = f"""
   <tr>
     <td>Item 1 – Self Assessment</td>
     <td>{'2' if item1=='Yes' else '0'}</td>
@@ -564,6 +563,7 @@ if st.button("Print Full Report", key="print_full_report"):
     <td>{comment_item29}</td>
   </tr>
 """
+
 
     # (Repeat for Items 4 through 29 as needed.)
     
