@@ -217,7 +217,7 @@ def generate_html(form_data, handbook_info, perfect_scores):
 # -------------------------------------------------------------------
 st.title("CQI Assessment Tool")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
-st.write("Fill out your project and checklist data below. For any item that does not achieve the perfect score, a comment is required. After clicking the 'Calculate Final Score' button, your scores will be displayed and a printable HTML form will be provided.")
+st.write("Fill out your project and checklist data below. For any item that does not achieve the perfect score, a comment is required. First, click the 'Calculate Final Score' button to validate your responses and see your scores. Then, click 'Generate Printable Form' to view a print-friendly version of the assessment.")
 
 # --- Project Information ---
 st.header("Project Information")
@@ -258,24 +258,137 @@ for item in handbook_info:
         score = st.number_input(f"Enter score for {item}:", key=item, step=1)
         form_data[item] = score
         # Show comment input only if score is below the perfect score.
-        comment = st.text_area(f"Enter comment for {item} (required if score is below {perfect_scores.get(item, 'perfect')}):", key="Comment for " + item) if score < perfect_scores.get(item, score) else ""
+        comment = st.text_area(f"Enter comment for {item} (required if score is below {perfect_scores.get(item)}):", key="Comment for " + item) if score < perfect_scores.get(item) else ""
         form_data["Comment for " + item] = comment
 
-# Calculate final score.
-numeric_scores = [form_data[item] for item in handbook_info if isinstance(form_data[item], (int, float))]
-total_score = sum(numeric_scores)
-final_percentage = round(total_score / 175 * 100, 1)
-form_data["Final Score"] = total_score
-form_data["Final Percentage"] = final_percentage
+# -------------------------------------------------------------------
+# Calculate Final Score Button
+# -------------------------------------------------------------------
+if st.button("Calculate Final Score"):
+    errors = []
+    # Validate required comments for items with score below perfect.
+    if form_data["Item 1 – Self Assessment"] != 2 and not form_data.get("Comment for Item 1", "").strip():
+        errors.append("Item 1 requires a comment.")
+    if form_data["Item 2 – Self Assessment Submission"] != 2 and not form_data.get("Comment for Item 2", "").strip():
+        errors.append("Item 2 requires a comment.")
+    if form_data["Item 3 – Notice to Proceed (NTP)"] != 4 and not form_data.get("Comment for Item 3", "").strip():
+        errors.append("Item 3 requires a comment.")
+    # For Item 4, using calculated score (item4_score)
+    if 'item4_score' not in st.session_state:
+        # Calculate Item 4 score
+        total_md = st.session_state.get("total_md", 1000)
+        planned_wip = st.session_state.get("planned_wip", 100)
+        actual_wip = st.session_state.get("actual_wip", 100)
+        if total_md < 1000:
+            allowed = 10
+        elif total_md < 2000:
+            allowed = 5
+        else:
+            allowed = 2.5
+        diff = abs(actual_wip - planned_wip)
+        if diff == 0:
+            st.session_state.item4_score = 16
+        elif diff <= allowed:
+            st.session_state.item4_score = 12
+        else:
+            st.session_state.item4_score = 4
+    if st.session_state.item4_score != 16 and not st.session_state.get("Comment for Item 4", "").strip():
+        errors.append("Item 4 requires a comment.")
+    if form_data["Item 5 – Project Management"] != 2 and not form_data.get("Comment for Item 5", "").strip():
+        errors.append("Item 5 requires a comment.")
+    if form_data["Item 6 – QA for 30 NCR Detail Sites"] != 4 and not form_data.get("Comment for Item 6", "").strip():
+        errors.append("Item 6 requires a comment.")
+    if form_data["Item 7 & 8 – FAR/RFI"] != 4 and not form_data.get("Comment for Item 7 & 8", "").strip():
+        errors.append("Items 7 & 8 require a comment.")
+    if form_data["Item 9 – DFOW Sheet"] != 4 and not form_data.get("Comment for Item 9", "").strip():
+        errors.append("Item 9 requires a comment.")
+    if form_data["Item 10 – Turnover Projects"] not in [4, "N/A"] and not form_data.get("Comment for Item 10", "").strip():
+        errors.append("Item 10 requires a comment.")
+    if form_data["Item 11 – Funds Provided"] != 4 and not form_data.get("Comment for Item 11", "").strip():
+        errors.append("Item 11 requires a comment.")
+    if form_data["Item 12 – Estimate at Completion Cost (EAC)"] != 4 and not form_data.get("Comment for Item 12", "").strip():
+        errors.append("Item 12 requires a comment.")
+    if form_data["Item 13 – Current Expenditures"] != 4 and not form_data.get("Comment for Item 13", "").strip():
+        errors.append("Item 13 requires a comment.")
+    if form_data["Item 14 – Project Material Status Report (PMSR)"] != 10 and not form_data.get("Comment for Item 14", "").strip():
+        errors.append("Item 14 requires a comment.")
+    if form_data["Item 15 – Report Submission"] != 2 and not form_data.get("Comment for Item 15", "").strip():
+        errors.append("Item 15 requires a comment.")
+    if form_data["Item 16 – Materials On-Hand"] != 10 and not form_data.get("Comment for Item 16", "").strip():
+        errors.append("Item 16 requires a comment.")
+    if form_data["Item 17 – DD Form 200"] != 2 and not form_data.get("Comment for Item 17", "").strip():
+        errors.append("Item 17 requires a comment.")
+    if form_data["Item 18 – Borrowed Material Tickler File"] != 2 and not form_data.get("Comment for Item 18", "").strip():
+        errors.append("Item 18 requires a comment.")
+    if form_data["Item 19 – Project Brief"] != 5 and not form_data.get("Comment for Item 19", "").strip():
+        errors.append("Item 19 requires a comment.")
+    if form_data["Item 20 – Calculate Manday Capability"] != 6 and not form_data.get("Comment for Item 20", "").strip():
+        errors.append("Item 20 requires a comment.")
+    if form_data["Item 21 – Equipment"] != 6 and not form_data.get("Comment for Item 21", "").strip():
+        errors.append("Item 21 requires a comment.")
+    if form_data["Item 22 – CASS Spot Check"] != 12 and not form_data.get("Comment for Item 22", "").strip():
+        errors.append("Item 22 requires a comment.")
+    if form_data["Item 23 – Designation Letters"] != 5 and not form_data.get("Comment for Item 23", "").strip():
+        errors.append("Item 23 requires a comment.")
+    if st.session_state.get("deduction24", 0) != 0 and not form_data.get("Comment for Item 24", "").strip():
+        errors.append("Item 24 requires a comment for the deduction.")
+    if form_data["Item 25 – Review QC Package"] != 8 and not form_data.get("Comment for Item 25", "").strip():
+        errors.append("Item 25 requires a comment.")
+    if form_data["Item 26 – Submittals"] != 4 and not form_data.get("Comment for Item 26", "").strip():
+        errors.append("Item 26 requires a comment.")
+    if form_data["Item 27a – QC Inspection Plan"] != 10 and not form_data.get("Comment for Item 27a", "").strip():
+        errors.append("Item 27a requires a comment.")
+    if form_data["Item 27b – QC Inspection"] != 5 and not form_data.get("Comment for Item 27b", "").strip():
+        errors.append("Item 27b requires a comment.")
+    if st.session_state.get("deduction28", 0) != 0 and not form_data.get("Comment for Item 28", "").strip():
+        errors.append("Item 28 requires a comment for the deduction.")
+    if st.session_state.get("deduction29", 0) != 0 and not form_data.get("Comment for Item 29", "").strip():
+        errors.append("Item 29 requires a comment for the deduction.")
+    
+    if errors:
+        for err in errors:
+            st.error(err)
+    else:
+        # Convert Yes/No responses to numeric scores.
+        score1 = 2 if form_data["Item 1 – Self Assessment"] == "Yes" else 0
+        score2 = 2 if form_data["Item 2 – Self Assessment Submission"] == "Yes" else 0
+        score3 = 4 if form_data["Item 3 – Notice to Proceed (NTP)"] == "Yes" else 0
+        score5 = 2 if form_data["Item 5 – Project Management"] == "Yes" else 0
+        score11 = 4 if form_data["Item 11 – Funds Provided"] == "Yes" else 0
+        score17 = 2 if form_data["Item 17 – DD Form 200"] == "Yes" else 0
+        score18 = 2 if form_data["Item 18 – Borrowed Material Tickler File"] == "Yes" else 0
+        
+        # Calculate total score (numeric items already stored in form_data).
+        total_score = (
+            score1 + score2 + score3 + st.session_state.item4_score + score5 +
+            form_data["Item 6 – QA for 30 NCR Detail Sites"] + form_data["Item 7 & 8 – FAR/RFI"] + form_data["Item 9 – DFOW Sheet"] +
+            (form_data["Item 10 – Turnover Projects"] if form_data["Item 10 – Turnover Projects"] != "N/A" else 0) +
+            score11 + form_data["Item 12 – Estimate at Completion Cost (EAC)"] + form_data["Item 13 – Current Expenditures"] +
+            form_data["Item 14 – Project Material Status Report (PMSR)"] + score15 + form_data["Item 16 – Materials On-Hand"] +
+            score17 + score18 + form_data["Item 19 – Project Brief"] + form_data["Item 20 – Calculate Manday Capability"] +
+            form_data["Item 21 – Equipment"] + form_data["Item 22 – CASS Spot Check"] + form_data["Item 23 – Designation Letters"] +
+            (20 - st.session_state.get("deduction24", 0)) + form_data["Item 25 – Review QC Package"] +
+            form_data["Item 26 – Submittals"] + form_data["Item 27a – QC Inspection Plan"] + form_data["Item 27b – QC Inspection"] +
+            (5 - st.session_state.get("deduction28", 0)) + (5 - st.session_state.get("deduction29", 0))
+        )
+        final_percentage = round(total_score / 175 * 100, 1)
+        form_data["Final Score"] = total_score
+        form_data["Final Percentage"] = final_percentage
 
-st.write(f"Final Score: {total_score} out of 175")
-st.write(f"Final Percentage: {final_percentage}%")
-st.success("Final Score Calculated!")
-st.write("**Final Score:**", total_score, "out of 175")
-st.write("**Final Percentage:**", final_percentage, "%")
+        st.session_state.form_data = form_data
+        st.session_state.final_score = total_score
+        st.session_state.final_percentage = final_percentage
+        st.success("Final Score Calculated!")
+        st.write("**Final Score:**", total_score, "out of 175")
+        st.write("**Final Percentage:**", final_percentage, "%")
 
-# Generate and display the printable HTML form.
+# -------------------------------------------------------------------
+# Generate Printable HTML Form Button
+# -------------------------------------------------------------------
 if st.button("Generate Printable Form"):
-    html_output = generate_html(form_data, handbook_info, perfect_scores)
-    components.html(html_output, height=600, scrolling=True)
-    st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
+    if "form_data" not in st.session_state:
+        st.error("Please calculate the final score first.")
+    else:
+        html_output = generate_html(st.session_state.form_data, handbook_info, perfect_scores)
+        components.html(html_output, height=600, scrolling=True)
+        st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
