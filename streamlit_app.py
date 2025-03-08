@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 import datetime
 import io
 import base64
+import emoji
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
 
@@ -106,86 +107,129 @@ handbook_info = {
 #------------------------------------------------------------------------
 
 import streamlit as st
+import emoji
 
-# Initialize calculator expression in session state if not present.
+# Set title
+st.title("Calculator")
+
+# Display a calculator icon
+st.markdown(f"<h1 style='text-align: left;'>{emoji.emojize(':abacus:')}</h1>", unsafe_allow_html=True)
+
+# Create a container for the calculator display
+display = st.empty()
+display.markdown("<div style='font-size: 40px; color: #333;'>0</div>", unsafe_allow_html=True)
+
+# Initialize state variables
 if "calc_expr" not in st.session_state:
     st.session_state.calc_expr = ""
+if "stored_value" not in st.session_state:
+    st.session_state.stored_value = ""
+if "operation" not in st.session_state:
+    st.session_state.operation = None
 
-# Define callback functions
-def append_value(val):
-    st.session_state.calc_expr += str(val)
+# Functions to update the calculator state
+def update_display(value):
+    st.session_state.calc_expr += str(value)
+    display.markdown(f"<div style='font-size: 40px; color: #333;'>{st.session_state.calc_expr}</div>", unsafe_allow_html=True)
 
 def clear_expr():
     st.session_state.calc_expr = ""
+    display.markdown("<div style='font-size: 40px; color: #333;'>0</div>", unsafe_allow_html=True)
 
-def evaluate_expr():
+def set_operation(op):
+    # When an operation is set, store the current value and clear the display
+    if st.session_state.calc_expr:
+        st.session_state.operation = op
+        st.session_state.stored_value = st.session_state.calc_expr
+        st.session_state.calc_expr = ""
+        display.markdown("<div style='font-size: 40px; color: #333;'>0</div>", unsafe_allow_html=True)
+
+def calculate_result():
     try:
-        # Evaluate the expression safely using eval; in production, consider a safer parser.
-        st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
+        if st.session_state.operation and st.session_state.calc_expr:
+            num1 = float(st.session_state.stored_value)
+            num2 = float(st.session_state.calc_expr)
+            if st.session_state.operation == "Addition":
+                result = num1 + num2
+            elif st.session_state.operation == "Subtraction":
+                result = num1 - num2
+            elif st.session_state.operation == "Multiplication":
+                result = num1 * num2
+            elif st.session_state.operation == "Division":
+                if num2 != 0:
+                    result = num1 / num2
+                else:
+                    result = "Division by zero is not allowed"
+            st.session_state.calc_expr = str(result)
+            display.markdown(f"<div style='font-size: 40px; color: #333;'>{result}</div>", unsafe_allow_html=True)
+            st.session_state.operation = None
+            st.balloons()
     except Exception as e:
         st.session_state.calc_expr = "Error"
+        display.markdown("<div style='font-size: 40px; color: red;'>Error</div>", unsafe_allow_html=True)
 
-# Display the calculator screen (read-only)
-st.text_input("Calculator", value=st.session_state.calc_expr, key="calc_display", disabled=True)
+# Define custom style for buttons
+button_style = """
+    <style>
+    .stButton>button {
+        font-size: 30px;
+        padding: 10px;
+        width: 100%;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        color: #333;
+    }
+    .stButton>button:hover {
+        background-color: #ddd;
+        border: 1px solid #bbb;
+    }
+    </style>
+"""
+st.markdown(button_style, unsafe_allow_html=True)
 
-# Layout calculator buttons in a grid
+# Arrange calculator buttons using columns
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    if st.button("7", on_click=append_value, args=("7",)):
-        pass
+    if st.button("7"):
+        update_display("7")
+    if st.button("4"):
+        update_display("4")
+    if st.button("1"):
+        update_display("1")
+    if st.button("0"):
+        update_display("0")
 with col2:
-    if st.button("8", on_click=append_value, args=("8",)):
-        pass
+    if st.button("8"):
+        update_display("8")
+    if st.button("5"):
+        update_display("5")
+    if st.button("2"):
+        update_display("2")
+    if st.button("."):
+        update_display(".")
 with col3:
-    if st.button("9", on_click=append_value, args=("9",)):
-        pass
+    if st.button("9"):
+        update_display("9")
+    if st.button("6"):
+        update_display("6")
+    if st.button("3"):
+        update_display("3")
+    if st.button("="):
+        calculate_result()
 with col4:
-    if st.button("/", on_click=append_value, args=("/",)):
-        pass
+    if st.button(emoji.emojize(":heavy_plus_sign:")):
+        set_operation("Addition")
+    if st.button(emoji.emojize(":heavy_minus_sign:")):
+        set_operation("Subtraction")
+    if st.button(emoji.emojize(":heavy_multiplication_x:")):
+        set_operation("Multiplication")
+    if st.button(emoji.emojize(":heavy_division_sign:")):
+        set_operation("Division")
+    if st.button("C"):
+        clear_expr()
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("4", on_click=append_value, args=("4",)):
-        pass
-with col2:
-    if st.button("5", on_click=append_value, args=("5",)):
-        pass
-with col3:
-    if st.button("6", on_click=append_value, args=("6",)):
-        pass
-with col4:
-    if st.button("*", on_click=append_value, args=("*",)):
-        pass
+st.write("Current Expression:", st.session_state.calc_expr)
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("1", on_click=append_value, args=("1",)):
-        pass
-with col2:
-    if st.button("2", on_click=append_value, args=("2",)):
-        pass
-with col3:
-    if st.button("3", on_click=append_value, args=("3",)):
-        pass
-with col4:
-    if st.button("-", on_click=append_value, args=("-",)):
-        pass
-
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("0", on_click=append_value, args=("0",)):
-        pass
-with col2:
-    if st.button(".", on_click=append_value, args=(".",)):
-        pass
-with col3:
-    if st.button("=", on_click=evaluate_expr):
-        pass
-with col4:
-    if st.button("+", on_click=append_value, args=("+",)):
-        pass
-
-st.button("Clear", on_click=clear_expr)
 
 
 # -------------------------------------------------------------------
