@@ -423,16 +423,15 @@ if st.button("Print This Page", key="print_button"):
 # Define a default empty drawing for the canvas
 default_canvas = {"background": "#FFF", "objects": []}
 
-# -------------------------------------------------------------------
-# Signature Blocks
-# -------------------------------------------------------------------
+# Signature Blocks (placed at the bottom)
 st.header("Signatures")
 
-# For OIC Signature
+# OIC Signature Block
 st.markdown("#### OIC Signature")
+default_canvas = {"background": "#FFF", "objects": []}
 initial_oic = st.session_state.get("oic_signature_data", default_canvas)
 canvas_result_oic = st_canvas(
-    fill_color="rgba(255, 165, 0, 0.3)",  # Optional: fill with transparency
+    fill_color="rgba(255, 165, 0, 0.3)",
     stroke_width=2,
     stroke_color="#000000",
     background_color="#FFF",
@@ -440,13 +439,10 @@ canvas_result_oic = st_canvas(
     width=500,
     drawing_mode="freedraw",
     key="oic_signature",
-    initial_drawing=initial_oic  # Use stored drawing or default
+    initial_drawing=initial_oic
 )
-# Store the JSON drawing in session state for persistence
-if canvas_result_oic.json_data is not None:
-    st.session_state.oic_signature_data = canvas_result_oic.json_data
 
-# For 30 NCR Signature
+# 30 NCR Signature Block
 st.markdown("#### 30 NCR Signature")
 initial_ncr = st.session_state.get("ncr_signature_data", default_canvas)
 canvas_result_30ncr = st_canvas(
@@ -460,8 +456,11 @@ canvas_result_30ncr = st_canvas(
     key="ncr_signature",
     initial_drawing=initial_ncr
 )
-if canvas_result_30ncr.json_data is not None:
-    st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
 
-if canvas_result_30ncr.json_data is not None:
-    st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
+# Button to explicitly save the signature data
+if st.button("Save Signatures", key="save_signatures"):
+    if canvas_result_oic.json_data is not None:
+        st.session_state.oic_signature_data = canvas_result_oic.json_data
+    if canvas_result_30ncr.json_data is not None:
+        st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
+    st.success("Signatures Saved!")
