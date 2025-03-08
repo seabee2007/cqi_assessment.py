@@ -423,137 +423,137 @@ if st.button("Print Full Report", key="print_full_report"):
       <tr>
         <td>Item 3 – Notice to Proceed (NTP)</td>
         <td>{'4' if item3=='Yes' else '0'}</td>
-        <td>{comment_item3}</td>
+        
       </tr>
       <tr>
         <td>Item 4 – Project Schedule</td>
         <td>{item4_score}</td>
-        <td>{comment_item4}</td>
+        
       </tr>
       <tr>
         <td>Item 5 – Project Management</td>
         <td>{'2' if item5=='Yes' else '0'}</td>
-        <td>{comment_item5}</td>
+        
       </tr>
       <tr>
         <td>Item 6 – QA for 30 NCR Detail Sites</td>
         <td>{item6}</td>
-        <td>{comment_item6}</td>
+        
       </tr>
       <tr>
         <td>Item 7 &amp; 8 – FAR/RFI</td>
         <td>{item78}</td>
-        <td>{comment_item78}</td>
+        
       </tr>
       <tr>
         <td>Item 9 – DFOW Sheet</td>
         <td>{item9}</td>
-        <td>{comment_item9}</td>
+        
       </tr>
       <tr>
         <td>Item 10 – Turnover Projects</td>
         <td>{item10 if item10!="N/A" else "N/A"}</td>
-        <td>{comment_item10}</td>
+        
       </tr>
       <tr>
         <td>Item 11 – Funds Provided</td>
         <td>{'4' if item11=='Yes' else '0'}</td>
-        <td>{comment_item11}</td>
+        
       </tr>
       <tr>
         <td>Item 12 – Estimate at Completion Cost (EAC)</td>
         <td>{item12}</td>
-        <td>{comment_item12}</td>
+        
       </tr>
       <tr>
         <td>Item 13 – Current Expenditures</td>
         <td>{item13}</td>
-        <td>{comment_item13}</td>
+        
       </tr>
       <tr>
         <td>Item 14 – Project Material Status Report (PMSR)</td>
         <td>{item14}</td>
-        <td>{comment_item14}</td>
+        
       </tr>
       <tr>
         <td>Item 15 – Report Submission</td>
         <td>{'2' if item15=='Yes' else '0'}</td>
-        <td>{comment_item15}</td>
+       
       </tr>
       <tr>
         <td>Item 16 – Materials On-Hand</td>
         <td>{item16}</td>
-        <td>{comment_item16}</td>
+       
       </tr>
       <tr>
         <td>Item 17 – DD Form 200</td>
         <td>{'2' if item17=='Yes' else '0'}</td>
-        <td>{comment_item17}</td>
+        
       </tr>
       <tr>
         <td>Item 18 – Borrowed Material Tickler File</td>
         <td>{'2' if item18=='Yes' else '0'}</td>
-        <td>{comment_item18}</td>
+        
       </tr>
       <tr>
         <td>Item 19 – Project Brief</td>
         <td>{item19}</td>
-        <td>{comment_item19}</td>
+       
       </tr>
       <tr>
         <td>Item 20 – Calculate Manday Capability</td>
         <td>{item20}</td>
-        <td>{comment_item20}</td>
+      
       </tr>
       <tr>
         <td>Item 21 – Equipment</td>
         <td>{item21}</td>
-        <td>{comment_item21}</td>
+        
       </tr>
       <tr>
         <td>Item 22 – CASS Spot Check</td>
         <td>{item22}</td>
-        <td>{comment_item22}</td>
+       
       </tr>
       <tr>
         <td>Item 23 – Designation Letters</td>
         <td>{item23}</td>
-        <td>{comment_item23}</td>
+        
       </tr>
       <tr>
         <td>Item 24 – Job Box Review</td>
         <td>{20 - deduction24}</td>
-        <td>{comment_item24}</td>
+       
       </tr>
       <tr>
         <td>Item 25 – Review QC Package</td>
         <td>{item25}</td>
-        <td>{comment_item25}</td>
+        
       </tr>
       <tr>
         <td>Item 26 – Submittals</td>
         <td>{item26}</td>
-        <td>{comment_item26}</td>
+       
       </tr>
       <tr>
         <td>Item 27a – QC Inspection Plan</td>
         <td>{item27a}</td>
-        <td>{comment_item27a}</td>
+       
       </tr>
       <tr>
         <td>Item 27b – QC Inspection</td>
         <td>{item27b}</td>
-        <td>{comment_item27b}</td>
+      
       </tr>
       <tr>
         <td>Item 28 – Job Box Review (QC)</td>
         <td>{5 - deduction28}</td>
-        <td>{comment_item28}</td>
+        
       </tr>
       <tr>
         <td>Item 29 – Job Box Review (Safety)</td>
         <td>{5 - deduction29}</td>
-        <td>{comment_item29}</td>
+        
       </tr>
     """
     
