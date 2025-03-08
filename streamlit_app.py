@@ -584,7 +584,7 @@ if st.button("Print Full Report", key="print_full_report"):
           .assessment-table tr td:nth-child(2) {{
           border-bottom: 2px solid #000;
           }}
-          .signature {{ border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }
+          .signature {{ border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }}
           h2, h3, h4 {{ text-align: center; }}
           .page-break {{ page-break-before: always; }}
         </style>
