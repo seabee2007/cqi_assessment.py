@@ -105,129 +105,142 @@ handbook_info = {
 #-----------------------------------------------------------------------
 #       CALC - app
 #------------------------------------------------------------------------
+import streamlit as st
+import emoji
 
+# Initialize modal state if not already set
+if "show_calculator" not in st.session_state:
+    st.session_state.show_calculator = False
 
-# Set title
-st.title("Calculator")
+# Button to open the calculator modal (you can place this anywhere)
+if st.button("Open Calculator"):
+    st.session_state.show_calculator = True
 
-# Display a calculator icon
-st.markdown(f"<h1 style='text-align: left;'>{emoji.emojize(':abacus:')}</h1>", unsafe_allow_html=True)
-
-# Create a container for the calculator display
-display = st.empty()
-display.markdown("<div style='font-size: 40px; color: #333;'>0</div>", unsafe_allow_html=True)
-
-# Initialize state variables
-if "calc_expr" not in st.session_state:
-    st.session_state.calc_expr = ""
-if "stored_value" not in st.session_state:
-    st.session_state.stored_value = ""
-if "operation" not in st.session_state:
-    st.session_state.operation = None
-
-# Functions to update the calculator state
-def update_display(value):
-    st.session_state.calc_expr += str(value)
-    display.markdown(f"<div style='font-size: 40px; color: #333;'>{st.session_state.calc_expr}</div>", unsafe_allow_html=True)
-
-def clear_expr():
-    st.session_state.calc_expr = ""
-    display.markdown("<div style='font-size: 40px; color: #333;'>0</div>", unsafe_allow_html=True)
-
-def set_operation(op):
-    # When an operation is set, store the current value and clear the display
-    if st.session_state.calc_expr:
-        st.session_state.operation = op
-        st.session_state.stored_value = st.session_state.calc_expr
-        st.session_state.calc_expr = ""
-        display.markdown("<div style='font-size: 40px; color: #333;'>0</div>", unsafe_allow_html=True)
-
-def calculate_result():
-    try:
-        if st.session_state.operation and st.session_state.calc_expr:
-            num1 = float(st.session_state.stored_value)
-            num2 = float(st.session_state.calc_expr)
-            if st.session_state.operation == "Addition":
-                result = num1 + num2
-            elif st.session_state.operation == "Subtraction":
-                result = num1 - num2
-            elif st.session_state.operation == "Multiplication":
-                result = num1 * num2
-            elif st.session_state.operation == "Division":
-                if num2 != 0:
-                    result = num1 / num2
-                else:
-                    result = "Division by zero is not allowed"
-            st.session_state.calc_expr = str(result)
-            display.markdown(f"<div style='font-size: 40px; color: #333;'>{result}</div>", unsafe_allow_html=True)
-            st.session_state.operation = None
-            st.balloons()
-    except Exception as e:
-        st.session_state.calc_expr = "Error"
-        display.markdown("<div style='font-size: 40px; color: red;'>Error</div>", unsafe_allow_html=True)
-
-# Define custom style for buttons
-button_style = """
-    <style>
-    .stButton>button {
-        font-size: 30px;
-        padding: 10px;
-        width: 100%;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        color: #333;
-    }
-    .stButton>button:hover {
-        background-color: #ddd;
-        border: 1px solid #bbb;
-    }
-    </style>
-"""
-st.markdown(button_style, unsafe_allow_html=True)
-
-# Arrange calculator buttons using columns
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("7"):
-        update_display("7")
-    if st.button("4"):
-        update_display("4")
-    if st.button("1"):
-        update_display("1")
-    if st.button("0"):
-        update_display("0")
-with col2:
-    if st.button("8"):
-        update_display("8")
-    if st.button("5"):
-        update_display("5")
-    if st.button("2"):
-        update_display("2")
-    if st.button("."):
-        update_display(".")
-with col3:
-    if st.button("9"):
-        update_display("9")
-    if st.button("6"):
-        update_display("6")
-    if st.button("3"):
-        update_display("3")
-    if st.button("="):
-        calculate_result()
-with col4:
-    if st.button(emoji.emojize(":heavy_plus_sign:")):
-        set_operation("Addition")
-    if st.button(emoji.emojize(":heavy_minus_sign:")):
-        set_operation("Subtraction")
-    if st.button(emoji.emojize(":heavy_multiplication_x:")):
-        set_operation("Multiplication")
-    if st.button(emoji.emojize(":heavy_division_sign:")):
-        set_operation("Division")
-    if st.button("C"):
-        clear_expr()
-
-st.write("Current Expression:", st.session_state.calc_expr)
-
+# --- Calculator Modal ---
+if st.session_state.show_calculator:
+    st.markdown(
+        """
+        <style>
+        /* Modal overlay covers the entire screen */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+        }
+        /* Modal content centered on screen */
+        .modal-content {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: white;
+          padding: 20px;
+          z-index: 1001;
+          border-radius: 10px;
+          width: 350px;
+        }
+        /* Style for calculator display */
+        .calc-display {
+          font-size: 40px;
+          color: #333;
+          text-align: right;
+          margin-bottom: 10px;
+        }
+        /* Style for calculator buttons */
+        .calc-button {
+          font-size: 30px;
+          padding: 10px;
+          width: 80px;
+          background-color: #f0f0f0;
+          border: 1px solid #ccc;
+          color: #333;
+          margin: 2px;
+          cursor: pointer;
+        }
+        .calc-button:hover {
+          background-color: #ddd;
+          border: 1px solid #bbb;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown('<div class="modal-overlay"></div>', unsafe_allow_html=True)
+    
+    # Use an empty container to simulate the modal content.
+    modal_container = st.container()
+    with modal_container:
+        st.markdown('<div class="modal-content">', unsafe_allow_html=True)
+        st.title("Calculator " + emoji.emojize(":abacus:"))
+        
+        # Initialize calculator expression if not set.
+        if "calc_expr" not in st.session_state:
+            st.session_state.calc_expr = ""
+        
+        # Functions to update the calculator
+        def append_value(val):
+            st.session_state.calc_expr += str(val)
+        def clear_expr():
+            st.session_state.calc_expr = ""
+        def evaluate_expr():
+            try:
+                st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
+            except Exception:
+                st.session_state.calc_expr = "Error"
+        
+        # Display the calculator output
+        st.markdown(f"<div class='calc-display'>{st.session_state.calc_expr or '0'}</div>", unsafe_allow_html=True)
+        
+        # Arrange buttons using columns:
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            if st.button("7", key="btn7"):
+                append_value("7")
+            if st.button("4", key="btn4"):
+                append_value("4")
+            if st.button("1", key="btn1"):
+                append_value("1")
+            if st.button("0", key="btn0"):
+                append_value("0")
+        with col2:
+            if st.button("8", key="btn8"):
+                append_value("8")
+            if st.button("5", key="btn5"):
+                append_value("5")
+            if st.button("2", key="btn2"):
+                append_value("2")
+            if st.button(".", key="btndot"):
+                append_value(".")
+        with col3:
+            if st.button("9", key="btn9"):
+                append_value("9")
+            if st.button("6", key="btn6"):
+                append_value("6")
+            if st.button("3", key="btn3"):
+                append_value("3")
+            if st.button("=", key="btnEquals"):
+                evaluate_expr()
+        with col4:
+            if st.button(emoji.emojize(":heavy_plus_sign:"), key="btnPlus"):
+                append_value("+")
+            if st.button(emoji.emojize(":heavy_minus_sign:"), key="btnMinus"):
+                append_value("-")
+            if st.button(emoji.emojize(":heavy_multiplication_x:"), key="btnMultiply"):
+                append_value("*")
+            if st.button(emoji.emojize(":heavy_division_sign:"), key="btnDivide"):
+                append_value("/")
+            if st.button("C", key="btnClear"):
+                clear_expr()
+        
+        # Button to close the calculator modal
+        if st.button("Close Calculator", key="btnCloseCalc"):
+            st.session_state.show_calculator = False
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # -------------------------------------------------------------------
