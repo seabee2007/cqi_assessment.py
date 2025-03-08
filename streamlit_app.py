@@ -387,6 +387,25 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
+# ... (your final score calculation block)
+
+if "final_score" in st.session_state:
+    st.success("Final Score Calculated!")
+    st.write("**Final Score:**", st.session_state.final_score, "out of 175")
+    st.write("**Final Percentage:**", st.session_state.final_percentage, "%")
+
+# Print instructions (won't be printed because of the no-print class)
+st.markdown(
+    """
+    <div class="no-print" style="text-align: center; margin-top: 20px;">
+      <p>To print this form, please press <kbd>Ctrl+P</kbd> (or <kbd>Cmd+P</kbd> on macOS).</p>
+      <button onclick="window.parent.print()">Print This Page</button>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 # -------------------------------------------------------------------
 # Print instructions (won't be printed because of the no-print class)
 # -------------------------------------------------------------------
