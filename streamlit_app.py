@@ -562,7 +562,7 @@ assessment_rows = f"""
     <td>{5 - deduction29}</td>
     <td>{comment_item29}</td>
   </tr>
-"""
+  """
 
 
     # (Repeat for Items 4 through 29 as needed.)
