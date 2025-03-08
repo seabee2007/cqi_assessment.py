@@ -339,9 +339,3 @@ if st.button("Calculate Final Score"):
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
-
-
-
-
-
-       
