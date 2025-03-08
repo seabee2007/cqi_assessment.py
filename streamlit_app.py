@@ -1,7 +1,8 @@
 import streamlit as st
-from fpdf import FPDF
-import io
-import os
+import datetime
+
+# Use st.components.v1 (no separate module needed)
+import streamlit.components.v1 as components
 
 # -------------------------------------------------------------------
 # Helper Functions
@@ -11,22 +12,6 @@ def sanitize(text):
     if isinstance(text, str):
         return text.replace("\u2013", "-").replace("\u2014", "-")
     return text
-
-def wrap_text(pdf, text, cell_width):
-    """Splits text into lines that fit within cell_width."""
-    words = text.split()
-    lines = []
-    current_line = ""
-    for word in words:
-        test_line = f"{current_line} {word}".strip() if current_line else word
-        if pdf.get_string_width(test_line) <= cell_width:
-            current_line = test_line
-        else:
-            lines.append(current_line)
-            current_line = word
-    if current_line:
-        lines.append(current_line)
-    return lines
 
 # -------------------------------------------------------------------
 # Handbook Amplifying Info for Items 1–29 (sample text; update as needed)
@@ -44,7 +29,7 @@ handbook_info = {
     "Item 11 – Funds Provided": "Are project funds tracked? (4 pts = Monitored; 0 pts = Not monitored)",
     "Item 12 – Estimate at Completion Cost (EAC)": "EAC accuracy. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Low accuracy; 0 pts = ≤59% accuracy)",
     "Item 13 – Current Expenditures": "Verify current expenditures. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Discrepancies; 0 pts = ≤59% accuracy)",
-    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2 or 0 pts otherwise)",
+    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2/0 pts otherwise)",
     "Item 15 – Report Submission": "Are PMSR and EAC reports routed monthly? (2 pts = Yes; 0 pts = No)",
     "Item 16 – Materials On-Hand": "Materials on-hand verification. (10 pts = Organized; 8 pts = Minor issues; 4 pts = Multiple issues; 0 pts = Unsatisfactory)",
     "Item 17 – DD Form 200": "DD Form 200 status. (2 pts = Correct; 0 pts = Not maintained)",
@@ -67,6 +52,7 @@ handbook_info = {
 # Function to generate the print-friendly HTML
 # -------------------------------------------------------------------
 def generate_html(form_data, handbook_info):
+    # Define a basic HTML template with inline CSS.
     html = f"""
     <html>
     <head>
@@ -96,14 +82,15 @@ def generate_html(form_data, handbook_info):
         }}
         .score {{
           text-align: center;
-          width: 15%;
-          display: inline-block;
-          vertical-align: top;
           font-weight: bold;
+          display: inline-block;
+          width: 15%;
+          vertical-align: top;
+          margin-left: 5px;
         }}
         .info {{
-          width: 80%;
           display: inline-block;
+          width: 80%;
           vertical-align: top;
         }}
         .comment {{
@@ -111,14 +98,6 @@ def generate_html(form_data, handbook_info):
           padding: 5px;
           margin-top: 5px;
           background-color: #f9f9f9;
-        }}
-        table {{
-          width: 100%;
-          border-collapse: collapse;
-        }}
-        td, th {{
-          border: 1px solid #333;
-          padding: 5px;
         }}
       </style>
     </head>
@@ -138,13 +117,16 @@ def generate_html(form_data, handbook_info):
       <div class="section">
         <h3>Checklist Items</h3>
     """
+    # For each checklist item, add a block.
+    # Each block displays the item title (in all caps with a colon) plus the amplifying info on the left,
+    # the numerical score on the right, and, if present, a full-width comment row below.
     for item, info in handbook_info.items():
         score = form_data.get(item, "")
         comment = form_data.get(f"Comment for {item}", "")
         html += f"""
         <div class="item-block">
           <div>
-            <span class="item-title">{item.upper()}:</span> {info}
+            <span class="info"><span class="item-title">{item.upper()}:</span> {info}</span>
             <span class="score">{score}</span>
           </div>
         """
@@ -186,25 +168,28 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# For each checklist item, display the item title, its amplifying info, and input widgets.
+# For each checklist item, display the item and its amplifying info (using st.info) and input widgets.
+# The key for the score is the same as the handbook_info key.
+# Comments will be stored under "Comment for {item}".
 # Item 1
 st.subheader("Item 1 – Self Assessment")
 st.info(handbook_info["Item 1 – Self Assessment"])
 item1 = st.radio("Response:", options=["Yes", "No"], key="item1")
 comment_item1 = st.text_area("Comment (if not perfect):", key="Comment for Item 1") if item1 != "Yes" else ""
+
 # Item 2
 st.subheader("Item 2 – Self Assessment Submission")
 st.info(handbook_info["Item 2 – Self Assessment Submission"])
 item2 = st.radio("Response:", options=["Yes", "No"], key="item2")
 comment_item2 = st.text_area("Comment (if not perfect):", key="Comment for Item 2") if item2 != "Yes" else ""
+
 # Item 3
 st.subheader("Item 3 – Notice to Proceed (NTP)")
 st.info(handbook_info["Item 3 – Notice to Proceed (NTP)"])
 item3 = st.radio("Response:", options=["Yes", "No"], key="item3")
 comment_item3 = st.text_area("Comment (if not perfect):", key="Comment for Item 3") if item3 != "Yes" else ""
-# (Continue similarly for Items 4 through 29...)
-# For brevity, we only demo a few items here. You would include all items.
-# Item 4 – Project Schedule
+
+# Item 4 – Project Schedule (sample calculation)
 st.subheader("Item 4 – Project Schedule")
 st.info(handbook_info["Item 4 – Project Schedule"])
 st.markdown("Score is based on the difference between planned and actual work-in-place. Exact = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts.")
@@ -226,31 +211,35 @@ else:
     item4_score = 4
 st.write(f"Calculated Score for Item 4: {item4_score}")
 comment_item4 = st.text_area("Comment (if not perfect):", key="Comment for Item 4") if item4_score != 16 else ""
-# ... Continue for Items 5 through 29 ...
-# For demonstration, assume sample responses for the remaining items:
-sample_items = ["Item 5 – Project Management", "Item 6 – QA for 30 NCR Detail Sites", 
-                "Item 7 & 8 – FAR/RFI", "Item 9 – DFOW Sheet", "Item 10 – Turnover Projects",
-                "Item 11 – Funds Provided", "Item 12 – Estimate at Completion Cost (EAC)",
-                "Item 13 – Current Expenditures", "Item 14 – Project Material Status Report (PMSR)",
-                "Item 15 – Report Submission", "Item 16 – Materials On-Hand", "Item 17 – DD Form 200",
-                "Item 18 – Borrowed Material Tickler File", "Item 19 – Project Brief",
-                "Item 20 – Calculate Manday Capability", "Item 21 – Equipment",
-                "Item 22 – CASS Spot Check", "Item 23 – Designation Letters",
-                "Item 24 – Job Box Review", "Item 25 – Review QC Package",
-                "Item 26 – Submittals", "Item 27a – QC Inspection Plan", "Item 27b – QC Inspection",
-                "Item 28 – Job Box Review (QC)", "Item 29 – Job Box Review (Safety)"]
+
+# For demonstration purposes, we'll add a couple more sample items.
+# In your full app, you would include all items 5–29 similarly.
+sample_items = [
+    "Item 5 – Project Management", "Item 6 – QA for 30 NCR Detail Sites", 
+    "Item 7 & 8 – FAR/RFI", "Item 9 – DFOW Sheet", "Item 10 – Turnover Projects",
+    "Item 11 – Funds Provided", "Item 12 – Estimate at Completion Cost (EAC)",
+    "Item 13 – Current Expenditures", "Item 14 – Project Material Status Report (PMSR)",
+    "Item 15 – Report Submission", "Item 16 – Materials On-Hand", "Item 17 – DD Form 200",
+    "Item 18 – Borrowed Material Tickler File", "Item 19 – Project Brief",
+    "Item 20 – Calculate Manday Capability", "Item 21 – Equipment",
+    "Item 22 – CASS Spot Check", "Item 23 – Designation Letters",
+    "Item 24 – Job Box Review", "Item 25 – Review QC Package",
+    "Item 26 – Submittals", "Item 27a – QC Inspection Plan", "Item 27b – QC Inspection",
+    "Item 28 – Job Box Review (QC)", "Item 29 – Job Box Review (Safety)"
+]
 for item in sample_items:
     st.subheader(item)
     st.info(handbook_info.get(item, ""))
-    # For demo, set a default response and empty comment.
-    st.text_input("Response (score):", value="Sample Score", key=item)
-    st.text_area("Comment (if any):", key=f"Comment for {item}")
-
-# Final Score (for demo purposes)
+    # For demonstration, we use a text_input for score and text_area for comment.
+    resp = st.text_input("Response (score):", value="Sample Score", key=item)
+    comm = st.text_area("Comment (if any):", key=f"Comment for {item}")
+    
+# For demonstration, we set final scores:
 final_score = 166
 final_percentage = 94.9
 
-# Build form_data dictionary.
+# Initialize form_data as an empty dictionary and update it.
+form_data = {}
 form_data.update({
     "Project Name": proj_name,
     "Battalion": battalion,
@@ -258,12 +247,20 @@ form_data.update({
     "Planned Start": str(planned_start),
     "Planned Completion": str(planned_completion),
     "Actual Completion": str(actual_completion),
+    "Item 1 – Self Assessment": item1,
+    "Comment for Item 1": comment_item1,
+    "Item 2 – Self Assessment Submission": item2,
+    "Comment for Item 2": comment_item2,
+    "Item 3 – Notice to Proceed (NTP)": item3,
+    "Comment for Item 3": comment_item3,
     "Item 4 – Project Schedule": str(item4_score),
+    "Comment for Item 4": comment_item4,
     "Final Score": final_score,
     "Final Percentage": final_percentage,
 })
+# (In your full app, ensure you update form_data with responses for all items.)
 
 if st.button("Generate Printable Form"):
     html_output = generate_html(form_data, handbook_info)
-    st.components.v1.html(html_output, height=600, scrolling=True)
+    components.html(html_output, height=600, scrolling=True)
     st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
