@@ -420,47 +420,33 @@ if st.button("Print This Page", key="print_button"):
         height=0,
     )
 
-# Define a default empty drawing for the canvas
-default_canvas = {"background": "#FFF", "objects": []}
+with st.form("signature_form"):
+    st.header("Signatures")
+    canvas_result_oic = st_canvas(
+        fill_color="rgba(255,165,0,0.3)",
+        stroke_width=2,
+        stroke_color="#000000",
+        background_color="#FFF",
+        height=150,
+        width=500,
+        drawing_mode="freedraw",
+        key="oic_signature",
+        initial_drawing=st.session_state.get("oic_signature_data", default_canvas)
+    )
+    canvas_result_30ncr = st_canvas(
+        fill_color="rgba(255,165,0,0.3)",
+        stroke_width=2,
+        stroke_color="#000000",
+        background_color="#FFF",
+        height=150,
+        width=500,
+        drawing_mode="freedraw",
+        key="ncr_signature",
+        initial_drawing=st.session_state.get("ncr_signature_data", default_canvas)
+    )
+    submit_signatures = st.form_submit_button("Save Signatures")
 
-# Signature Blocks (placed at the bottom)
-st.header("Signatures")
-
-# OIC Signature Block
-st.markdown("#### OIC Signature")
-default_canvas = {"background": "#FFF", "objects": []}
-initial_oic = st.session_state.get("oic_signature_data", default_canvas)
-canvas_result_oic = st_canvas(
-    fill_color="rgba(255, 165, 0, 0.3)",
-    stroke_width=2,
-    stroke_color="#000000",
-    background_color="#FFF",
-    height=150,
-    width=500,
-    drawing_mode="freedraw",
-    key="oic_signature",
-    initial_drawing=initial_oic
-)
-
-# 30 NCR Signature Block
-st.markdown("#### 30 NCR Signature")
-initial_ncr = st.session_state.get("ncr_signature_data", default_canvas)
-canvas_result_30ncr = st_canvas(
-    fill_color="rgba(255, 165, 0, 0.3)",
-    stroke_width=2,
-    stroke_color="#000000",
-    background_color="#FFF",
-    height=150,
-    width=500,
-    drawing_mode="freedraw",
-    key="ncr_signature",
-    initial_drawing=initial_ncr
-)
-
-# Button to explicitly save the signature data
-if st.button("Save Signatures", key="save_signatures"):
-    if canvas_result_oic.json_data is not None:
+    if submit_signatures:
         st.session_state.oic_signature_data = canvas_result_oic.json_data
-    if canvas_result_30ncr.json_data is not None:
         st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
-    st.success("Signatures Saved!")
+        st.success("Signatures Saved!")
