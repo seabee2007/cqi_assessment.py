@@ -583,7 +583,7 @@ html_content = f"""
       <body>
         <h2>Construction Quality Inspection Report</h2>
         <h3>Project Information</h3>
-        <p><strong>Project Name:</strong> {project_name}</p>
+        <p><strong>Project Name:</strong> {project_name_input}</p>
         <p><strong>Battalion:</strong> {battalion}</p>
         <p><strong>OIC:</strong> {oic_name}</p>
         <p><strong>AOIC:</strong> {aoic}</p>
