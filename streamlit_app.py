@@ -101,6 +101,110 @@ handbook_info = {
     "Item 29 – Job Box Review (Safety)": "Review safety plan, daily safety reports, and emergency contacts. (5 pts = Up-to-date; deductions apply)"
 }
 
+#-----------------------------------------------------------------------
+#       CALC - app
+#------------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+      /* Floating calculator icon */
+      #calculator-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 24px;
+      }
+      /* Modal style for calculator */
+      #calculator-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        background-color: white;
+        border: 1px solid #888;
+        width: 300px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      }
+      #calculator-modal input, #calculator-modal button {
+        width: 23%;
+        margin: 2px;
+        padding: 10px;
+        font-size: 16px;
+      }
+      #calculator-modal input {
+        width: 94%;
+        margin-bottom: 10px;
+        text-align: right;
+      }
+      #close-calculator {
+        float: right;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 18px;
+      }
+    </style>
+    <div id="calculator-icon" onclick="document.getElementById('calculator-modal').style.display='block';">
+      &#128425;
+    </div>
+    <div id="calculator-modal">
+      <span id="close-calculator" onclick="document.getElementById('calculator-modal').style.display='none';">X</span>
+      <h3>Calculator</h3>
+      <input type="text" id="calc-display" readonly>
+      <br>
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button onclick="appendValue('/')">/</button>
+      <br>
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button onclick="appendValue('*')">*</button>
+      <br>
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button onclick="appendValue('-')">-</button>
+      <br>
+      <button onclick="appendValue('0')">0</button>
+      <button onclick="appendValue('.')">.</button>
+      <button onclick="calculateResult()">=</button>
+      <button onclick="appendValue('+')">+</button>
+      <br>
+      <button onclick="clearDisplay()">Clear</button>
+    </div>
+    <script>
+      function appendValue(val) {
+        document.getElementById('calc-display').value += val;
+      }
+      function clearDisplay() {
+        document.getElementById('calc-display').value = '';
+      }
+      function calculateResult() {
+        try {
+          var result = eval(document.getElementById('calc-display').value);
+          document.getElementById('calc-display').value = result;
+        } catch (e) {
+          document.getElementById('calc-display').value = 'Error';
+        }
+      }
+    </script>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
 # -------------------------------------------------------------------
 # Main App – Data Input Section
 # -------------------------------------------------------------------
