@@ -263,9 +263,9 @@ pdf.cell(0, 10, sanitize(f"Actual Completion: {form_data['Actual Completion']}")
 pdf.ln(5)
     
     # --- Assessment Inputs ---
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, sanitize("Assessment Inputs"), ln=True)
-    pdf.set_font("Arial", size=12)
+pdf.set_font("Arial", "B", 14)
+pdf.cell(0, 10, sanitize("Assessment Inputs"), ln=True)
+pdf.set_font("Arial", size=12)
     
     # List of tuples: (item_key, comment_key)
     items = [
