@@ -630,7 +630,7 @@ if st.button("Print Full Report", key="print_full_report"):
           <tr>
             <th>Item</th>
             <th>Score</th>
-            <th>Comment</th>
+            
           </tr>
           {assessment_rows}
         </table>
@@ -651,11 +651,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <h3>Comments</h3>
         {comment_sections}
         
-        <script>
-          window.onload = function() {{
-             window.print();
-          }};
-        </script>
+       
       </body>
     </html>
     """
