@@ -95,54 +95,43 @@ def generate_pdf(handbook_details, form_data):
     pdf.set_font("DejaVu", "", 12)
     
     effective_width = pdf.w - pdf.l_margin - pdf.r_margin
-    left_width = effective_width * 0.6   # 60% for item question + amplifying info
-    right_width = effective_width * 0.4  # 40% for score and comment
+    left_width = effective_width * 0.8   # 80% for item question + info
+    score_width = effective_width * 0.2  # 20% for score
     line_height = 8
     
-    # Table header (optional)
+    # Optional header row for clarity.
     pdf.set_font("Arial", "B", 12)
     pdf.cell(left_width, line_height, "Item & Info", border=1, align="C")
-    pdf.cell(right_width, line_height, "Score & Comments", border=1, align="C")
+    pdf.cell(score_width, line_height, "Score", border=1, align="C")
     pdf.ln(line_height)
     pdf.set_font("DejaVu", "", 12)
     
-    # For each item, create two rows:
-    # Row 1: Left = item question; Right = "Score: <score>"
-    # Row 2: Left = amplifying info; Right = "Comment: <comment>" (if any)
     for item, info in handbook_details.items():
-        # Left cell texts:
-        row1_left = item
-        row2_left = info
-        
-        # Right cell texts: Get score and comment from form_data.
+        # Prepare the left cell text: item question and amplifying info.
+        left_text = f"{item}\n{info}"
+        # Get the numerical score and comment from form_data.
         score = form_data.get(item, "")
         comment = form_data.get(f"Comment for {item}", "")
-        row1_right = f"Score: {score}"
-        row2_right = f"Comment: {comment}" if comment.strip() else ""
         
-        # Wrap text for each cell.
-        left1_lines = wrap_text(pdf, row1_left, left_width)
-        right1_lines = wrap_text(pdf, row1_right, right_width)
-        left2_lines = wrap_text(pdf, row2_left, left_width)
-        right2_lines = wrap_text(pdf, row2_right, right_width)
-        
-        row1_lines = max(len(left1_lines), len(right1_lines))
-        row2_lines = max(len(left2_lines), len(right2_lines))
-        
-        # Print Row 1.
+        # Row 1: Left cell = item + info; Right cell = Score.
+        left_lines = wrap_text(pdf, left_text, left_width)
+        score_text = f"{score}"
+        score_lines = wrap_text(pdf, score_text, score_width)
+        row1_lines = max(len(left_lines), len(score_lines))
         for i in range(row1_lines):
-            left_line = left1_lines[i] if i < len(left1_lines) else ""
-            right_line = right1_lines[i] if i < len(right1_lines) else ""
+            left_line = left_lines[i] if i < len(left_lines) else ""
+            score_line = score_lines[i] if i < len(score_lines) else ""
             pdf.cell(left_width, line_height, left_line, border=1)
-            pdf.cell(right_width, line_height, right_line, border=1)
+            pdf.cell(score_width, line_height, score_line, border=1)
             pdf.ln(line_height)
-        # Print Row 2.
-        for i in range(row2_lines):
-            left_line = left2_lines[i] if i < len(left2_lines) else ""
-            right_line = right2_lines[i] if i < len(right2_lines) else ""
-            pdf.cell(left_width, line_height, left_line, border=1)
-            pdf.cell(right_width, line_height, right_line, border=1)
-            pdf.ln(line_height)
+        
+        # If there is a comment, add a new row spanning full width.
+        if comment.strip():
+            comment_text = f"Comment: {comment}"
+            comment_lines = wrap_text(pdf, comment_text, effective_width)
+            for line in comment_lines:
+                pdf.cell(effective_width, line_height, line, border=1)
+                pdf.ln(line_height)
     
     # Final Results Section
     pdf.ln(5)
@@ -157,6 +146,7 @@ def generate_pdf(handbook_details, form_data):
     pdf_buffer = io.BytesIO(pdf_bytes)
     pdf_buffer.seek(0)
     return pdf_buffer
+
 
 # -------------------------------------------------------------------
 # Main App – Data Input Section
