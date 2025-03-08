@@ -402,14 +402,9 @@ st.markdown(
 if st.button("Print This Page"):
     st.components.v1.html(
         """
-        <html>
-          <head>
-            <script>
-              window.print();
-            </script>
-          </head>
-          <body></body>
-        </html>
+        <script>
+          window.parent.print();
+        </script>
         """,
         height=0,
     )
