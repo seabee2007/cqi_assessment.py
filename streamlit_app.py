@@ -573,15 +573,21 @@ if st.button("Print Full Report", key="print_full_report"):
     html_content = f"""
     <html>
       <head>
-        <style>
-          body {{ font-family: Arial, sans-serif; margin: 20px; }}
-          table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-          th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
-          th {{ background-color: #f2f2f2; }}
-          .signature {{ border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }}
-          h2, h3, h4 {{ text-align: center; }}
-          .page-break {{ page-break-before: always; }}
-        </style>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+  th { background-color: #f2f2f2; }
+  /* Add a bottom border only for the first two cells in each row */
+  .assessment-table tr td:nth-child(1),
+  .assessment-table tr td:nth-child(2) {
+      border-bottom: 2px solid #000;
+  }
+  .signature { border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }
+  h2, h3, h4 { text-align: center; }
+  .page-break { page-break-before: always; }
+</style>
+
       </head>
       <body>
         <h2>Construction Quality Inspection Report</h2>
