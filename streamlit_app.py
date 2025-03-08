@@ -667,7 +667,7 @@ if st.button("Print Full Report", key="print_full_report"):
           .assessment-table tr td:nth-child(2) {{
               border-bottom: 2px solid #000;
           }}
-          .signature {{ border: 1px solid #000; width: 300px; height: 75px; display: block; margin-bottom: 20px; }}
+          .signature {{ border: 1px solid #000; width: 300px; height: 70px; display: block; margin-bottom: 20px; }}
           h2, h3, h4 {{ text-align: center; }}
           .page-break {{ page-break-before: always; }}
         </style>
@@ -697,7 +697,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Final Score:</strong> {final_score} out of 171</p>
         <p><strong>Final Percentage:</strong> {final_percentage}%</p>
         
-        <h3>Signatures</h3>
+        
         <h4>OIC Signature: {oic_name}</h4>
         <img src="data:image/png;base64,{oic_base64}" class="signature"/>
         <h4>AOIC Signature: {aoic}</h4>
