@@ -528,7 +528,7 @@ if st.button("Print Full Report", key="print_full_report"):
       </tr>
     """
     
-    # Build the comments section: all comments will appear together (not each on its own page).
+    # Build the comments section: all comments together.
     comment_sections = ""
     comments_list = [
         ("Item 1 – Self Assessment", comment_item1),
@@ -561,7 +561,6 @@ if st.button("Print Full Report", key="print_full_report"):
         ("Item 28 – Job Box Review (QC)", comment_item28),
         ("Item 29 – Job Box Review (Safety)", comment_item29)
     ]
-    # Join all non-empty comments together in one section.
     for item, comment in comments_list:
         if comment and comment.strip():
             comment_sections += f"""
@@ -579,17 +578,10 @@ if st.button("Print Full Report", key="print_full_report"):
           table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
           th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
           th {{ background-color: #f2f2f2; }}
-          /* Add a bottom border only for the first two cells in each row */
-          .assessment-table tr td:nth-child(1),
-          .assessment-table tr td:nth-child(2) {{
-          border-bottom: 2px solid #000;
-          }}
-  .signature {{ border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }}
-  h2, h3, h4 {{ text-align: center; }}
-  .page-break {{ page-break-before: always; }}
-</style>
-
-
+          .signature {{ border: 1px solid #000; width: 300px; height: 100px; display: block; margin-bottom: 20px; }}
+          h2, h3, h4 {{ text-align: center; }}
+          .page-break {{ page-break-before: always; }}
+        </style>
       </head>
       <body>
         <h2>Construction Quality Inspection Report</h2>
@@ -604,7 +596,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Actual Completion:</strong> {actual_completion_str}</p>
         
         <h3>Assessment Details</h3>
-        <table class="assessment-table">
+        <table>
           <tr>
             <th>Item</th>
             <th>Score</th>
@@ -616,7 +608,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Final Score:</strong> {final_score} out of 175</p>
         <p><strong>Final Percentage:</strong> {final_percentage}%</p>
         
-        
+        <h3>Signatures</h3>
         <h4>OIC Signature:</h4>
         <img src="data:image/png;base64,{oic_base64}" class="signature"/>
         <h4>30 NCR Signature:</h4>
@@ -637,3 +629,4 @@ if st.button("Print Full Report", key="print_full_report"):
     </html>
     """
     components.html(html_content, height=900)
+
