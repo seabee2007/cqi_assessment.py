@@ -339,5 +339,20 @@ if st.button("Calculate Final Score"):
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
-        
+
+if st.button("Print This Page"):
+    st.components.v1.html(
+        """
+        <html>
+          <head>
+            <script>
+              window.print();
+            </script>
+          </head>
+          <body></body>
+        </html>
+        """,
+        height=0,
+    )
+
        
