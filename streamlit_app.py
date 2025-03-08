@@ -420,15 +420,17 @@ if st.button("Print This Page", key="print_button"):
         height=0,
     )
 
+# Define a default empty drawing for the canvas
+default_canvas = {"background": "#FFF", "objects": []}
+
 # -------------------------------------------------------------------
 # Signature Blocks
 # -------------------------------------------------------------------
 st.header("Signatures")
 
-# OIC Signature
+# For OIC Signature
 st.markdown("#### OIC Signature")
-# Retrieve previously stored JSON drawing if it exists.
-initial_oic = st.session_state.get("oic_signature_data", None)
+initial_oic = st.session_state.get("oic_signature_data", default_canvas)
 canvas_result_oic = st_canvas(
     fill_color="rgba(255, 165, 0, 0.3)",  # Optional: fill with transparency
     stroke_width=2,
@@ -438,15 +440,15 @@ canvas_result_oic = st_canvas(
     width=500,
     drawing_mode="freedraw",
     key="oic_signature",
-    initial_drawing=initial_oic  # Use the stored JSON data if available
+    initial_drawing=initial_oic  # Use stored drawing or default
 )
 # Store the JSON drawing in session state for persistence
 if canvas_result_oic.json_data is not None:
     st.session_state.oic_signature_data = canvas_result_oic.json_data
 
-# 30 NCR Signature
+# For 30 NCR Signature
 st.markdown("#### 30 NCR Signature")
-initial_ncr = st.session_state.get("ncr_signature_data", None)
+initial_ncr = st.session_state.get("ncr_signature_data", default_canvas)
 canvas_result_30ncr = st_canvas(
     fill_color="rgba(255, 165, 0, 0.3)",
     stroke_width=2,
@@ -458,5 +460,8 @@ canvas_result_30ncr = st_canvas(
     key="ncr_signature",
     initial_drawing=initial_ncr
 )
+if canvas_result_30ncr.json_data is not None:
+    st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
+
 if canvas_result_30ncr.json_data is not None:
     st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
