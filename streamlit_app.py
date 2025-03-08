@@ -609,7 +609,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Final Score:</strong> {final_score} out of 175</p>
         <p><strong>Final Percentage:</strong> {final_percentage}%</p>
         
-        <h3>Signatures</h3>
+        
         <h4>OIC Signature:</h4>
         <img src="data:image/png;base64,{oic_base64}" class="signature"/>
         <h4>30 NCR Signature:</h4>
