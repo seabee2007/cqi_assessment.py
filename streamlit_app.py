@@ -400,8 +400,8 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         # Save results and project info to session state.
         st.session_state.final_score = total_score
         st.session_state.final_percentage = final_percentage
-        st.session_state.proj_name = proj_name_input
-        st.session_state.battalion = battalion_input
+      #  st.session_state.proj_name = proj_name_input
+      #  st.session_state.battalion = battalion_input
         
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
