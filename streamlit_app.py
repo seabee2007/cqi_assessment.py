@@ -268,7 +268,7 @@ pdf.cell(0, 10, sanitize("Assessment Inputs"), ln=True)
 pdf.set_font("Arial", size=12)
     
     # List of tuples: (item_key, comment_key)
-    items = [
+items = [
         ("Item 1 – Self Assessment", "Comment for Item 1"),
         ("Item 2 – Self Assessment Submission", "Comment for Item 2"),
         ("Item 3 – Notice to Proceed (NTP)", "Comment for Item 3"),
