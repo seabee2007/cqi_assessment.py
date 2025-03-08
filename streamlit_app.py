@@ -1,8 +1,6 @@
 import streamlit as st
-import datetime
-
-# Use st.components.v1 (no separate module needed)
 import streamlit.components.v1 as components
+import datetime
 
 # -------------------------------------------------------------------
 # Helper Functions
@@ -29,7 +27,7 @@ handbook_info = {
     "Item 11 – Funds Provided": "Are project funds tracked? (4 pts = Monitored; 0 pts = Not monitored)",
     "Item 12 – Estimate at Completion Cost (EAC)": "EAC accuracy. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Low accuracy; 0 pts = ≤59% accuracy)",
     "Item 13 – Current Expenditures": "Verify current expenditures. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Discrepancies; 0 pts = ≤59% accuracy)",
-    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2/0 pts otherwise)",
+    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2 or 0 pts otherwise)",
     "Item 15 – Report Submission": "Are PMSR and EAC reports routed monthly? (2 pts = Yes; 0 pts = No)",
     "Item 16 – Materials On-Hand": "Materials on-hand verification. (10 pts = Organized; 8 pts = Minor issues; 4 pts = Multiple issues; 0 pts = Unsatisfactory)",
     "Item 17 – DD Form 200": "DD Form 200 status. (2 pts = Correct; 0 pts = Not maintained)",
@@ -52,7 +50,6 @@ handbook_info = {
 # Function to generate the print-friendly HTML
 # -------------------------------------------------------------------
 def generate_html(form_data, handbook_info):
-    # Define a basic HTML template with inline CSS.
     html = f"""
     <html>
     <head>
@@ -117,9 +114,6 @@ def generate_html(form_data, handbook_info):
       <div class="section">
         <h3>Checklist Items</h3>
     """
-    # For each checklist item, add a block.
-    # Each block displays the item title (in all caps with a colon) plus the amplifying info on the left,
-    # the numerical score on the right, and, if present, a full-width comment row below.
     for item, info in handbook_info.items():
         score = form_data.get(item, "")
         comment = form_data.get(f"Comment for {item}", "")
@@ -168,9 +162,6 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# For each checklist item, display the item and its amplifying info (using st.info) and input widgets.
-# The key for the score is the same as the handbook_info key.
-# Comments will be stored under "Comment for {item}".
 # Item 1
 st.subheader("Item 1 – Self Assessment")
 st.info(handbook_info["Item 1 – Self Assessment"])
@@ -212,8 +203,7 @@ else:
 st.write(f"Calculated Score for Item 4: {item4_score}")
 comment_item4 = st.text_area("Comment (if not perfect):", key="Comment for Item 4") if item4_score != 16 else ""
 
-# For demonstration purposes, we'll add a couple more sample items.
-# In your full app, you would include all items 5–29 similarly.
+# For demonstration, we'll loop through sample items for Items 5–29.
 sample_items = [
     "Item 5 – Project Management", "Item 6 – QA for 30 NCR Detail Sites", 
     "Item 7 & 8 – FAR/RFI", "Item 9 – DFOW Sheet", "Item 10 – Turnover Projects",
@@ -230,17 +220,15 @@ sample_items = [
 for item in sample_items:
     st.subheader(item)
     st.info(handbook_info.get(item, ""))
-    # For demonstration, we use a text_input for score and text_area for comment.
     resp = st.text_input("Response (score):", value="Sample Score", key=item)
     comm = st.text_area("Comment (if any):", key=f"Comment for {item}")
     
-# For demonstration, we set final scores:
+# For demonstration, set final scores.
 final_score = 166
 final_percentage = 94.9
 
-# Initialize form_data as an empty dictionary and update it.
-form_data = {}
-form_data.update({
+# Build the form_data dictionary.
+form_data = {
     "Project Name": proj_name,
     "Battalion": battalion,
     "Start Date": str(start_date),
@@ -257,8 +245,8 @@ form_data.update({
     "Comment for Item 4": comment_item4,
     "Final Score": final_score,
     "Final Percentage": final_percentage,
-})
-# (In your full app, ensure you update form_data with responses for all items.)
+}
+# (In your full implementation, ensure form_data includes responses for Items 5–29 as well.)
 
 if st.button("Generate Printable Form"):
     html_output = generate_html(form_data, handbook_info)
