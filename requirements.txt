@@ -3,5 +3,5 @@ pandas
 numpy
 fpdf
 streamlit-drawable-canvas
-
+Pillow
 # Add any other dependencies below
