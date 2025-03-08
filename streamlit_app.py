@@ -419,11 +419,13 @@ if st.button("Print This Page", key="print_button"):
         """,
         height=0,
     )
-# Define a default canvas dictionary
+# Define a default canvas dictionary (place this before the form block)
 default_canvas = {"background": "#FFF", "objects": []}
 
 with st.form("signature_form"):
     st.header("Signatures")
+    
+    st.markdown("#### OIC Signature")
     canvas_result_oic = st_canvas(
         fill_color="rgba(255,165,0,0.3)",
         stroke_width=2,
@@ -435,6 +437,8 @@ with st.form("signature_form"):
         key="oic_signature",
         initial_drawing=st.session_state.get("oic_signature_data", default_canvas)
     )
+    
+    st.markdown("#### 30 NCR Signature")
     canvas_result_30ncr = st_canvas(
         fill_color="rgba(255,165,0,0.3)",
         stroke_width=2,
@@ -446,10 +450,10 @@ with st.form("signature_form"):
         key="ncr_signature",
         initial_drawing=st.session_state.get("ncr_signature_data", default_canvas)
     )
+    
     submit_signatures = st.form_submit_button("Save Signatures")
     
     if submit_signatures:
         st.session_state.oic_signature_data = canvas_result_oic.json_data
         st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
         st.success("Signatures Saved!")
-
