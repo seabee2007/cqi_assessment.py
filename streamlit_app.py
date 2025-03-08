@@ -4,6 +4,10 @@ import datetime
 import io
 import os
 
+
+if "form_data" not in st.session_state:
+    st.session_state.form_data = {}
+
 # -------------------------------------------------------------------
 # Helper Functions
 # -------------------------------------------------------------------
@@ -334,22 +338,21 @@ if st.button("Calculate Final Score"):
         )
         final_percentage = round(total_score / 175 * 100, 1)
        
-        st.session_state.final_score = total_score
-        st.session_state.final_percentage = final_percentage
-        st.success("Final Score Calculated!")
-        st.write("**Final Score:**", total_score, "out of 175")
-        st.write("**Final Percentage:**", final_percentage, "%")
+    # (after calculating final_score and final_percentage)
+    st.session_state.form_data = form_data
+    st.session_state.final_score = total_score
+    st.session_state.final_percentage = final_percentage
+    st.success("Final Score Calculated!")
+    st.write("**Final Score:**", total_score, "out of 175")
+    st.write("**Final Percentage:**", final_percentage, "%")
 
-# -------------------------------------------------------------------
-# Generate Printable HTML Form Button
-# -------------------------------------------------------------------
+
 if st.button("Generate Printable Form"):
-    if "form_data" not in st.session_state:
+    if not st.session_state.form_data:
         st.error("Please calculate the final score first.")
     else:
-        html_output = generate_html(st.session_state["form_data"], handbook_info, perfect_scores)
+        html_output = generate_html(st.session_state.form_data, handbook_info, perfect_scores)
         components.html(html_output, height=600, scrolling=True)
         st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
-
 
        
