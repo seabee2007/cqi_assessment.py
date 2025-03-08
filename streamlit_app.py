@@ -32,7 +32,7 @@ def wrap_text(pdf, text, cell_width):
 
 # -------------------------------------------------------------------
 # Mapping dictionary with amplifying info for items 1–29.
-# (Sample text; please update as needed to match your CQI Handbook.)
+# (Sample text; update as needed to match your CQI Handbook.)
 handbook_info = {
     "Item 1 – Self Assessment": "Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)",
     "Item 2 – Self Assessment Submission": "Were the self-assessment results submitted to 30 NCR SharePoint at least 7 days prior to inspection? (Yes = 2 pts, No = 0 pts)",
@@ -46,14 +46,14 @@ handbook_info = {
     "Item 11 – Funds Provided": "Are project funds tracked? (4 pts = Monitored; 0 pts = Not monitored)",
     "Item 12 – Estimate at Completion Cost (EAC)": "EAC accuracy. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Low accuracy; 0 pts = ≤59% accuracy)",
     "Item 13 – Current Expenditures": "Verify current expenditures. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Discrepancies; 0 pts = ≤59% accuracy)",
-    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2/0 pts otherwise)",
+    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2 or 0 pts otherwise)",
     "Item 15 – Report Submission": "Are PMSR and EAC reports routed monthly? (2 pts = Yes; 0 pts = No)",
     "Item 16 – Materials On-Hand": "Materials on-hand verification. (10 pts = Organized; 8 pts = Minor issues; 4 pts = Multiple issues; 0 pts = Unsatisfactory)",
     "Item 17 – DD Form 200": "DD Form 200 status. (2 pts = Correct; 0 pts = Not maintained)",
     "Item 18 – Borrowed Material Tickler File": "Borrow log verification. (2 pts = Valid; 0 pts = Not managed)",
-    "Item 19 – Project Brief": "Project brief quality. (5 pts = Detailed; 3 pts = Acceptable; 2/0 pts otherwise)",
+    "Item 19 – Project Brief": "Project brief quality. (5 pts = Detailed; 3 pts = Acceptable; 2 or 0 pts otherwise)",
     "Item 20 – Calculate Manday Capability": "Crew composition & MD capability. (6 pts = Matches; 4/2/0 pts otherwise)",
-    "Item 21 – Equipment": "Equipment adequacy. (6 pts = All onsite; 4 pts = Acceptable; 2/0 pts otherwise)",
+    "Item 21 – Equipment": "Equipment adequacy. (6 pts = All onsite; 4 pts = Acceptable; 2 or 0 pts otherwise)",
     "Item 22 – CASS Spot Check": "CASS review. (12 pts = 100% compliant; 8/4/0 pts otherwise)",
     "Item 23 – Designation Letters": "Designation letters status. (5 pts = Current; 3 pts = Not up-to-date; 0 pts = Missing)",
     "Item 24 – Job Box Review": "Review jobsite board items. (20 pts maximum; deductions apply)",
@@ -66,7 +66,7 @@ handbook_info = {
 }
 
 # -------------------------------------------------------------------
-# Custom PDF class with header and footer.
+# Custom PDF class
 # -------------------------------------------------------------------
 class PDF(FPDF):
     def __init__(self, **kwargs):
@@ -77,7 +77,7 @@ class PDF(FPDF):
     
     def header(self):
         self.set_font("DejaVu", "", 16)
-        self.cell(0, 10, "CQI Report", ln=1, align="C")
+        self.cell(0, 10, "CQI REPORT", ln=1, align="C")
         self.ln(5)
     
     def footer(self):
@@ -95,48 +95,63 @@ def generate_pdf(handbook_details, form_data):
     pdf.set_font("DejaVu", "", 12)
     
     effective_width = pdf.w - pdf.l_margin - pdf.r_margin
-    left_width = effective_width * 0.8   # 80% for item question + info
-    score_width = effective_width * 0.2  # 20% for score
+    left_width = effective_width * 0.8   # 80% for item question + amplifying info
+    score_width = effective_width * 0.2  # 20% for score (centered)
     line_height = 8
     
-    # Optional header row for clarity.
+    # Table header (optional)
     pdf.set_font("Arial", "B", 12)
-    pdf.cell(left_width, line_height, "Item & Info", border=1, align="C")
-    pdf.cell(score_width, line_height, "Score", border=1, align="C")
+    pdf.cell(left_width, line_height, "ITEM & INFO", border=1, align="C")
+    pdf.cell(score_width, line_height, "SCORE", border=1, align="C")
     pdf.ln(line_height)
     pdf.set_font("DejaVu", "", 12)
     
+    # For each item, print the item with its amplifying info and score.
     for item, info in handbook_details.items():
-        # Prepare the left cell text: item question and amplifying info.
-        left_text = f"{item}\n{info}"
-        # Get the numerical score and comment from form_data.
+        # Prepare left cell: item question (uppercase) and amplifying info.
+        left_text = f"{item.upper()}: {info}"
+        # Prepare right cell: score from form_data.
         score = form_data.get(item, "")
-        comment = form_data.get(f"Comment for {item}", "")
+        right_text = f"{score}"
         
-        # Row 1: Left cell = item + info; Right cell = Score.
+        # Determine required height for left cell.
         left_lines = wrap_text(pdf, left_text, left_width)
-        score_text = f"{score}"
-        score_lines = wrap_text(pdf, score_text, score_width)
-        row1_lines = max(len(left_lines), len(score_lines))
-        for i in range(row1_lines):
-            left_line = left_lines[i] if i < len(left_lines) else ""
-            score_line = score_lines[i] if i < len(score_lines) else ""
-            pdf.cell(left_width, line_height, left_line, border=1)
-            pdf.cell(score_width, line_height, score_line, border=1)
-            pdf.ln(line_height)
+        left_cell_height = len(left_lines) * line_height
+        # Determine required height for right cell.
+        right_lines = wrap_text(pdf, right_text, score_width)
+        right_cell_height = len(right_lines) * line_height
+        cell_height = max(left_cell_height, right_cell_height)
         
-        # If there is a comment, add a new row spanning full width.
+        # Save current positions.
+        start_x = pdf.get_x()
+        start_y = pdf.get_y()
+        
+        # Left cell: Print the text without border.
+        pdf.set_xy(start_x, start_y)
+        pdf.multi_cell(left_width, line_height, left_text, border=0)
+        # Draw a single rectangle around the entire left cell.
+        pdf.rect(start_x, start_y, left_width, cell_height)
+        
+        # Right cell: Print the score (centered).
+        pdf.set_xy(start_x + left_width, start_y)
+        pdf.multi_cell(score_width, line_height, right_text, border=0, align="C")
+        pdf.rect(start_x + left_width, start_y, score_width, cell_height)
+        
+        # Move to the next row.
+        pdf.set_xy(start_x, start_y + cell_height)
+        
+        # If there is a comment, print a full-width row below.
+        comment = form_data.get(f"Comment for {item}", "")
         if comment.strip():
-            comment_text = f"Comment: {comment}"
+            comment_text = f"COMMENT: {comment}"
             comment_lines = wrap_text(pdf, comment_text, effective_width)
-            for line in comment_lines:
-                pdf.cell(effective_width, line_height, line, border=1)
-                pdf.ln(line_height)
+            comment_height = len(comment_lines) * line_height
+            pdf.multi_cell(effective_width, line_height, comment_text, border=1)
     
-    # Final Results Section
+    # --- Final Results Section ---
     pdf.ln(5)
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, sanitize("Final Results"), ln=True)
+    pdf.cell(0, 10, sanitize("FINAL RESULTS"), ln=True)
     pdf.set_font("Arial", "", 12)
     pdf.cell(0, 10, sanitize(f"Final Score: {form_data.get('Final Score', '')} out of 175"), ln=True)
     pdf.cell(0, 10, sanitize(f"Final Percentage: {form_data.get('Final Percentage', '')}%"), ln=True)
@@ -147,13 +162,12 @@ def generate_pdf(handbook_details, form_data):
     pdf_buffer.seek(0)
     return pdf_buffer
 
-
 # -------------------------------------------------------------------
 # Main App – Data Input Section
 # -------------------------------------------------------------------
 st.title("Construction Quality Inspection (CQI) Assessment Tool")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
-st.write("Fill out the fields below. For any item that does not achieve the perfect score, a comment is required. The final PDF will display each item with its amplifying info alongside your score and comment.")
+st.write("Fill out the fields below. For any item that does not achieve the perfect score, a comment is required. The final PDF will display each item with its amplifying info (in uppercase) along with your score and any comment.")
 
 # --- Project Information ---
 st.header("Project Information")
@@ -167,32 +181,30 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# For each item, display the item subheader, then show the amplifying info using st.info,
-# and then provide input widgets.
+# For each item, display the item, its amplifying info (using st.info), then input widgets.
+# The key for each score is the same as the handbook_info key.
+# The comment will be stored under the key "Comment for {item}".
 # Item 1
 st.subheader("Item 1 – Self Assessment")
 st.info(handbook_info["Item 1 – Self Assessment"])
 item1 = st.radio("Response:", options=["Yes", "No"], key="item1")
 comment_item1 = st.text_area("Comment (if not perfect):", key="Comment for Item 1") if item1 != "Yes" else ""
-
 # Item 2
 st.subheader("Item 2 – Self Assessment Submission")
 st.info(handbook_info["Item 2 – Self Assessment Submission"])
 item2 = st.radio("Response:", options=["Yes", "No"], key="item2")
 comment_item2 = st.text_area("Comment (if not perfect):", key="Comment for Item 2") if item2 != "Yes" else ""
-
 # Item 3
 st.subheader("Item 3 – Notice to Proceed (NTP)")
 st.info(handbook_info["Item 3 – Notice to Proceed (NTP)"])
 item3 = st.radio("Response:", options=["Yes", "No"], key="item3")
 comment_item3 = st.text_area("Comment (if not perfect):", key="Comment for Item 3") if item3 != "Yes" else ""
-
-# Item 4 – Project Schedule (calculation example)
+# Item 4 – Project Schedule (calculated score)
 st.subheader("Item 4 – Project Schedule")
 st.info(handbook_info["Item 4 – Project Schedule"])
 st.markdown(
-    "Score is based on the percentage difference between planned and actual work-in-place.\n"
-    "Exact schedule = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts."
+    "Score is based on the difference between planned and actual work-in-place.\n"
+    "Exact = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts."
 )
 total_md = st.number_input("Total Project Mandays:", value=1000, step=1, key="total_md")
 planned_wip = st.number_input("Planned Work-in-Place (%)", value=100, step=1, key="planned_wip")
@@ -210,117 +222,98 @@ elif diff <= allowed:
     item4_score = 12
 else:
     item4_score = 4
-st.write(f"Calculated Score: {item4_score}")
+st.write(f"Calculated Score for Item 4: {item4_score}")
 comment_item4 = st.text_area("Comment (if not perfect):", key="Comment for Item 4") if item4_score != 16 else ""
-
 # Item 5
 st.subheader("Item 5 – Project Management")
 st.info(handbook_info["Item 5 – Project Management"])
 item5 = st.radio("Response:", options=["Yes", "No"], key="item5")
 comment_item5 = st.text_area("Comment (if not perfect):", key="Comment for Item 5") if item5 != "Yes" else ""
-
 # Item 6
 st.subheader("Item 6 – QA for 30 NCR Detail Sites")
 st.info(handbook_info["Item 6 – QA for 30 NCR Detail Sites"])
 item6 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item6")
 comment_item6 = st.text_area("Comment (if not perfect):", key="Comment for Item 6") if item6 != 4 else ""
-
 # Item 7 & 8
 st.subheader("Item 7 & 8 – FAR/RFI")
 st.info(handbook_info["Item 7 & 8 – FAR/RFI"])
 item78 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item78")
 comment_item78 = st.text_area("Comment (if not perfect):", key="Comment for Item 7 & 8") if item78 != 4 else ""
-
 # Item 9
 st.subheader("Item 9 – DFOW Sheet")
 st.info(handbook_info["Item 9 – DFOW Sheet"])
 item9 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item9")
 comment_item9 = st.text_area("Comment (if not perfect):", key="Comment for Item 9") if item9 != 4 else ""
-
 # Item 10
 st.subheader("Item 10 – Turnover Projects")
 st.info(handbook_info["Item 10 – Turnover Projects"])
 item10 = st.selectbox("Select score:", options=["N/A", 4, 0], key="item10")
 comment_item10 = st.text_area("Comment (if not perfect):", key="Comment for Item 10") if item10 not in ["N/A", 4] else ""
-
 # Item 11
 st.subheader("Item 11 – Funds Provided")
 st.info(handbook_info["Item 11 – Funds Provided"])
 item11 = st.radio("Response:", options=["Yes", "No"], key="item11")
 comment_item11 = st.text_area("Comment (if not perfect):", key="Comment for Item 11") if item11 != "Yes" else ""
-
 # Item 12
 st.subheader("Item 12 – Estimate at Completion Cost (EAC)")
 st.info(handbook_info["Item 12 – Estimate at Completion Cost (EAC)"])
 item12 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item12")
 comment_item12 = st.text_area("Comment (if not perfect):", key="Comment for Item 12") if item12 != 4 else ""
-
 # Item 13
 st.subheader("Item 13 – Current Expenditures")
 st.info(handbook_info["Item 13 – Current Expenditures"])
 item13 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item13")
 comment_item13 = st.text_area("Comment (if not perfect):", key="Comment for Item 13") if item13 != 4 else ""
-
 # Item 14
 st.subheader("Item 14 – Project Material Status Report (PMSR)")
 st.info(handbook_info["Item 14 – Project Material Status Report (PMSR)"])
 item14 = st.selectbox("Select score:", options=[10, 8, 4, 2, 0], key="item14")
 comment_item14 = st.text_area("Comment (if not perfect):", key="Comment for Item 14") if item14 != 10 else ""
-
 # Item 15
 st.subheader("Item 15 – Report Submission")
 st.info(handbook_info["Item 15 – Report Submission"])
 item15 = st.radio("Response:", options=["Yes", "No"], key="item15")
 comment_item15 = st.text_area("Comment (if not perfect):", key="Comment for Item 15") if item15 != "Yes" else ""
-
 # Item 16
 st.subheader("Item 16 – Materials On-Hand")
 st.info(handbook_info["Item 16 – Materials On-Hand"])
 item16 = st.selectbox("Select score:", options=[10, 8, 4, 0], key="item16")
 comment_item16 = st.text_area("Comment (if not perfect):", key="Comment for Item 16") if item16 != 10 else ""
-
 # Item 17
 st.subheader("Item 17 – DD Form 200")
 st.info(handbook_info["Item 17 – DD Form 200"])
 item17 = st.radio("Response:", options=["Yes", "No"], key="item17")
 comment_item17 = st.text_area("Comment (if not perfect):", key="Comment for Item 17") if item17 != "Yes" else ""
-
 # Item 18
 st.subheader("Item 18 – Borrowed Material Tickler File")
 st.info(handbook_info["Item 18 – Borrowed Material Tickler File"])
 item18 = st.radio("Response:", options=["Yes", "No"], key="item18")
 comment_item18 = st.text_area("Comment (if not perfect):", key="Comment for Item 18") if item18 != "Yes" else ""
-
 # Item 19
 st.subheader("Item 19 – Project Brief")
 st.info(handbook_info["Item 19 – Project Brief"])
 item19 = st.selectbox("Select score:", options=[5, 3, 2, 0], key="item19")
 comment_item19 = st.text_area("Comment (if not perfect):", key="Comment for Item 19") if item19 != 5 else ""
-
 # Item 20
 st.subheader("Item 20 – Calculate Manday Capability")
 st.info(handbook_info["Item 20 – Calculate Manday Capability"])
 item20 = st.selectbox("Select score:", options=[6, 4, 2, 0], key="item20")
 comment_item20 = st.text_area("Comment (if not perfect):", key="Comment for Item 20") if item20 != 6 else ""
-
 # Item 21
 st.subheader("Item 21 – Equipment")
 st.info(handbook_info["Item 21 – Equipment"])
 item21 = st.selectbox("Select score:", options=[6, 4, 2, 0], key="item21")
 comment_item21 = st.text_area("Comment (if not perfect):", key="Comment for Item 21") if item21 != 6 else ""
-
 # Item 22
 st.subheader("Item 22 – CASS Spot Check")
 st.info(handbook_info["Item 22 – CASS Spot Check"])
 item22 = st.selectbox("Select score:", options=[12, 8, 4, 0], key="item22")
 comment_item22 = st.text_area("Comment (if not perfect):", key="Comment for Item 22") if item22 != 12 else ""
-
 # Item 23
 st.subheader("Item 23 – Designation Letters")
 st.info(handbook_info["Item 23 – Designation Letters"])
 item23 = st.selectbox("Select score:", options=[5, 3, 0], key="item23")
 comment_item23 = st.text_area("Comment (if not perfect):", key="Comment for Item 23") if item23 != 5 else ""
-
 # Item 24
 st.subheader("Item 24 – Job Box Review")
 st.info(handbook_info["Item 24 – Job Box Review"])
@@ -328,38 +321,32 @@ item24 = st.selectbox("Select score (20 is perfect; deductions apply):", options
 deduction24 = st.number_input("Enter deduction for Item 24 (0 to 20):", min_value=0, max_value=20, value=0, step=1, key="deduction24")
 calculated_item24 = 20 - deduction24
 comment_item24 = st.text_area("Comment (if deduction applied):", key="Comment for Item 24") if deduction24 != 0 else ""
-
 # Item 25
 st.subheader("Item 25 – Review QC Package")
 st.info(handbook_info["Item 25 – Review QC Package"])
 item25 = st.selectbox("Select score:", options=[8, 6, 4, 0], key="item25")
 comment_item25 = st.text_area("Comment (if not perfect):", key="Comment for Item 25") if item25 != 8 else ""
-
 # Item 26
 st.subheader("Item 26 – Submittals")
 st.info(handbook_info["Item 26 – Submittals"])
 item26 = st.selectbox("Select score:", options=[4, 2, 0], key="item26")
 comment_item26 = st.text_area("Comment (if not perfect):", key="Comment for Item 26") if item26 != 4 else ""
-
 # Item 27a
 st.subheader("Item 27a – QC Inspection Plan")
 st.info(handbook_info["Item 27a – QC Inspection Plan"])
 item27a = st.selectbox("Select score:", options=[10, 7, 3, 0], key="item27a")
 comment_item27a = st.text_area("Comment (if not perfect):", key="Comment for Item 27a") if item27a != 10 else ""
-
 # Item 27b
 st.subheader("Item 27b – QC Inspection")
 st.info(handbook_info["Item 27b – QC Inspection"])
 item27b = st.selectbox("Select score:", options=[5, 0], key="item27b")
 comment_item27b = st.text_area("Comment (if not perfect):", key="Comment for Item 27b") if item27b != 5 else ""
-
 # Item 28
 st.subheader("Item 28 – Job Box Review (QC)")
 st.info(handbook_info["Item 28 – Job Box Review (QC)"])
 deduction28 = st.number_input("Enter deduction for Item 28 (0 to 5):", min_value=0, max_value=5, value=0, step=1, key="deduction28")
 item28 = 5 - deduction28
 comment_item28 = st.text_area("Comment (if deduction applied):", key="Comment for Item 28") if deduction28 != 0 else ""
-
 # Item 29
 st.subheader("Item 29 – Job Box Review (Safety)")
 st.info(handbook_info["Item 29 – Job Box Review (Safety)"])
@@ -372,7 +359,7 @@ comment_item29 = st.text_area("Comment (if deduction applied):", key="Comment fo
 # -------------------------------------------------------------------
 if st.button("Calculate Final Score"):
     errors = []
-    # Sample validations (extend as needed)
+    # Sample validations (extend for all items as needed)
     if item1 != "Yes" and not comment_item1.strip():
         errors.append("Item 1 requires a comment.")
     if item2 != "Yes" and not comment_item2.strip():
@@ -446,7 +433,7 @@ if st.button("Calculate Final Score"):
         score17 = 2 if item17 == "Yes" else 0
         score18 = 2 if item18 == "Yes" else 0
         
-        # Sample total score calculation (adjust/extend as needed).
+        # Sample total score calculation (extend as needed).
         total_score = (
             score1 + score2 + score3 + item4_score + score5 +
             item6 + item78 + item9 +
