@@ -3,8 +3,7 @@ import streamlit.components.v1 as components
 import datetime
 import io
 import os
-from streamlit_drawable_canvas 
-import st_canvas  # Added for signature blocks
+from streamlit_drawable_canvas import st_canvas  # Added for signature blocks
 
 # -------------------------------------------------------------------
 # Print-specific CSS (injected at the top)
