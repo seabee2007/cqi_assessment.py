@@ -32,7 +32,7 @@ def wrap_text(pdf, text, cell_width):
 
 # -------------------------------------------------------------------
 # Mapping dictionary with amplifying info from the CQI Handbook for items 1–29.
-# (This sample text is based on the handbook excerpt; adjust as needed.)
+# (Sample text; adjust as needed.)
 handbook_info = {
     "Item 1 – Self Assessment": (
         "Has the unit completed an initial self-assessment CQI checklist? "
@@ -131,7 +131,7 @@ handbook_info = {
     ),
     "Item 24 – Job Box Review": (
         "Review jobsite board items per NTRP guidelines. "
-        "All items accurate/up-to-date = 20 points; For discrepancies, subtract specified points (e.g., LVIII=6, etc.)."
+        "All items accurate/up-to-date = 20 points; For discrepancies, subtract specified points."
     ),
     "Item 25 – Review QC Package": (
         "Ensure QC reports are comprehensive and follow approved specifications. "
@@ -190,7 +190,7 @@ def generate_pdf(handbook_details, form_data):
     # --- Handbook Amplifying Info Table ---
     effective_width = pdf.w - pdf.l_margin - pdf.r_margin
     question_width = effective_width * 0.45    # 45% for item title
-    details_width = effective_width * 0.55     # 55% for amplifying info
+    details_width = effective_width * 0.55       # 55% for amplifying info
     line_height = 8
 
     # Header row for the handbook table
@@ -228,7 +228,7 @@ def generate_pdf(handbook_details, form_data):
     pdf.set_font("Arial", "", 12)
     
     # List of tuples: (item_key, comment_key)
-    items = [
+    assessment_items = [
         ("Item 1 – Self Assessment", "Comment for Item 1"),
         ("Item 2 – Self Assessment Submission", "Comment for Item 2"),
         ("Item 3 – Notice to Proceed (NTP)", "Comment for Item 3"),
@@ -260,7 +260,7 @@ def generate_pdf(handbook_details, form_data):
         ("Item 29 – Job Box Review (Safety)", "Comment for Item 29"),
     ]
     
-    for item_key, comment_key in items:
+    for item_key, comment_key in assessment_items:
         response = form_data.get(item_key, "")
         pdf.multi_cell(0, 10, sanitize(f"{item_key}: {response}"))
         comment = form_data.get(comment_key, "")
@@ -303,24 +303,235 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# Example for Item 1 – Self Assessment
+# Item 1 – Self Assessment
 st.subheader("Item 1 – Self Assessment")
 item1 = st.radio("Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)", options=["Yes", "No"], key="item1")
 comment_item1 = ""
 if item1 != "Yes":
     comment_item1 = st.text_area("Enter comment for Item 1 (required):", key="comment_item1")
 
-# Example for Item 2 – Self Assessment Submission
+# Item 2 – Self Assessment Submission
 st.subheader("Item 2 – Self Assessment Submission")
 item2 = st.radio("Were the self-assessment results submitted to 30 NCR SharePoint at least 7 days prior to inspection? (Yes = 2 pts, No = 0 pts)", options=["Yes", "No"], key="item2")
 comment_item2 = ""
 if item2 != "Yes":
     comment_item2 = st.text_area("Enter comment for Item 2 (required):", key="comment_item2")
 
-# ... Continue with the remaining items similarly ...
-# For brevity, only a few items are shown here.
-# Make sure to include all items from 1 to 29 in your actual app.
-# Example for Item 29 – Job Box Review (Safety)
+# Item 3 – Notice to Proceed (NTP)
+st.subheader("Item 3 – Notice to Proceed (NTP)")
+item3 = st.radio("Has a project confirmation/turnover brief been conducted with 30 NCR resulting in receiving a NTP? (Yes = 4 pts, No = 0 pts)", options=["Yes", "No"], key="item3")
+comment_item3 = ""
+if item3 != "Yes":
+    comment_item3 = st.text_area("Enter comment for Item 3 (required):", key="comment_item3")
+
+# Item 4 – Project Schedule
+st.subheader("Item 4 – Project Schedule")
+st.markdown(
+    "Is the unit achieving the given tasking? Score is based on actual percent of work-in-place vs scheduled.\n"
+    "Allowable deviations based on total project Mandays:\n"
+    "• 0–1,000 MD = ±10%\n"
+    "• 1,000–2,000 MD = ±5%\n"
+    "• 2,000+ MD = ±2.5%\n\n"
+    "Scoring:\n"
+    "• Exact schedule = 16 pts\n"
+    "• Within deviation = 12 pts\n"
+    "• Outside deviation = 4 pts\n"
+    "• Not monitored = 0 pts"
+)
+total_md = st.number_input("Total Project Mandays:", value=1000, step=1, key="total_md")
+planned_wip = st.number_input("Planned Work-in-Place (%)", value=100, step=1, key="planned_wip")
+actual_wip = st.number_input("Actual Work-in-Place (%)", value=100, step=1, key="actual_wip")
+if total_md < 1000:
+    allowed = 10
+elif total_md < 2000:
+    allowed = 5
+else:
+    allowed = 2.5
+diff = abs(actual_wip - planned_wip)
+if diff == 0:
+    item4_score = 16
+elif diff <= allowed:
+    item4_score = 12
+else:
+    item4_score = 4
+st.write(f"Calculated Project Schedule Score: {item4_score} points")
+comment_item4 = ""
+if item4_score != 16:
+    comment_item4 = st.text_area("Enter comment for Item 4 (required):", key="comment_item4")
+
+# Item 5 – Project Management
+st.subheader("Item 5 – Project Management")
+item5 = st.radio("Is a project management tool/CPM being utilized? (Yes = 2 pts, No = 0 pts)", options=["Yes", "No"], key="item5")
+comment_item5 = ""
+if item5 != "Yes":
+    comment_item5 = st.text_area("Enter comment for Item 5 (required):", key="comment_item5")
+
+# Item 6 – QA for 30 NCR Detail Sites
+st.subheader("Item 6 – QA for 30 NCR Detail Sites")
+item6 = st.selectbox("Select score for Item 6 (4, 3, 2, 0):", options=[4, 3, 2, 0], key="item6")
+comment_item6 = ""
+if item6 != 4:
+    comment_item6 = st.text_area("Enter comment for Item 6 (required):", key="comment_item6")
+
+# Item 7 & 8 – FAR/RFI
+st.subheader("Item 7 & 8 – FAR/RFI")
+item78 = st.selectbox("Select score for Items 7 & 8 (4, 3, 2, 0):", options=[4, 3, 2, 0], key="item78")
+comment_item78 = ""
+if item78 != 4:
+    comment_item78 = st.text_area("Enter comment for Items 7 & 8 (required):", key="comment_item78")
+
+# Item 9 – DFOW Sheet
+st.subheader("Item 9 – DFOW Sheet")
+item9 = st.selectbox("Select score for Item 9 (4, 3, 2, 0):", options=[4, 3, 2, 0], key="item9")
+comment_item9 = ""
+if item9 != 4:
+    comment_item9 = st.text_area("Enter comment for Item 9 (required):", key="comment_item9")
+
+# Item 10 – Turnover Projects
+st.subheader("Item 10 – Turnover Projects")
+item10 = st.selectbox("Select score for Item 10 (Options: N/A, 4, 0):", options=["N/A", 4, 0], key="item10")
+comment_item10 = ""
+if item10 not in ["N/A", 4]:
+    comment_item10 = st.text_area("Enter comment for Item 10 (required):", key="comment_item10")
+
+# Item 11 – Funds Provided
+st.subheader("Item 11 – Funds Provided")
+item11 = st.radio("Is project funding tracked via documents? (Yes = 4 pts, No = 0 pts)", options=["Yes", "No"], key="item11")
+comment_item11 = ""
+if item11 != "Yes":
+    comment_item11 = st.text_area("Enter comment for Item 11 (required):", key="comment_item11")
+
+# Item 12 – Estimate at Completion Cost (EAC)
+st.subheader("Item 12 – Estimate at Completion Cost (EAC)")
+item12 = st.selectbox("Select score for Item 12 (4, 3, 2, 0):", options=[4, 3, 2, 0], key="item12")
+comment_item12 = ""
+if item12 != 4:
+    comment_item12 = st.text_area("Enter comment for Item 12 (required):", key="comment_item12")
+
+# Item 13 – Current Expenditures
+st.subheader("Item 13 – Current Expenditures")
+item13 = st.selectbox("Select score for Item 13 (4, 3, 2, 0):", options=[4, 3, 2, 0], key="item13")
+comment_item13 = ""
+if item13 != 4:
+    comment_item13 = st.text_area("Enter comment for Item 13 (required):", key="comment_item13")
+
+# Item 14 – Project Material Status Report (PMSR)
+st.subheader("Item 14 – Project Material Status Report (PMSR)")
+item14 = st.selectbox("Select score for Item 14 (10, 8, 4, 2, 0):", options=[10, 8, 4, 2, 0], key="item14")
+comment_item14 = ""
+if item14 != 10:
+    comment_item14 = st.text_area("Enter comment for Item 14 (required):", key="comment_item14")
+
+# Item 15 – Report Submission
+st.subheader("Item 15 – Report Submission")
+item15 = st.radio("Are PMSR and EAC reports routed monthly? (Yes = 2 pts, No = 0 pts)", options=["Yes", "No"], key="item15")
+comment_item15 = ""
+if item15 != "Yes":
+    comment_item15 = st.text_area("Enter comment for Item 15 (required):", key="comment_item15")
+
+# Item 16 – Materials On-Hand
+st.subheader("Item 16 – Materials On-Hand")
+item16 = st.selectbox("Select score for Item 16 (10, 8, 4, 0):", options=[10, 8, 4, 0], key="item16")
+comment_item16 = ""
+if item16 != 10:
+    comment_item16 = st.text_area("Enter comment for Item 16 (required):", key="comment_item16")
+
+# Item 17 – DD Form 200
+st.subheader("Item 17 – DD Form 200")
+item17 = st.radio("Are DD Form 200's maintained? (Yes = 2 pts, No = 0 pts)", options=["Yes", "No"], key="item17")
+comment_item17 = ""
+if item17 != "Yes":
+    comment_item17 = st.text_area("Enter comment for Item 17 (required):", key="comment_item17")
+
+# Item 18 – Borrowed Material Tickler File
+st.subheader("Item 18 – Borrowed Material Tickler File")
+item18 = st.radio("Are borrows properly executed? (Yes = 2 pts, No = 0 pts)", options=["Yes", "No"], key="item18")
+comment_item18 = ""
+if item18 != "Yes":
+    comment_item18 = st.text_area("Enter comment for Item 18 (required):", key="comment_item18")
+
+# Item 19 – Project Brief
+st.subheader("Item 19 – Project Brief")
+item19 = st.selectbox("Select score for Item 19 (5, 3, 2, 0):", options=[5, 3, 2, 0], key="item19")
+comment_item19 = ""
+if item19 != 5:
+    comment_item19 = st.text_area("Enter comment for Item 19 (required):", key="comment_item19")
+
+# Item 20 – Calculate Manday Capability
+st.subheader("Item 20 – Calculate Manday Capability")
+item20 = st.selectbox("Select score for Item 20 (6, 4, 2, 0):", options=[6, 4, 2, 0], key="item20")
+comment_item20 = ""
+if item20 != 6:
+    comment_item20 = st.text_area("Enter comment for Item 20 (required):", key="comment_item20")
+
+# Item 21 – Equipment
+st.subheader("Item 21 – Equipment")
+item21 = st.selectbox("Select score for Item 21 (6, 4, 2, 0):", options=[6, 4, 2, 0], key="item21")
+comment_item21 = ""
+if item21 != 6:
+    comment_item21 = st.text_area("Enter comment for Item 21 (required):", key="comment_item21")
+
+# Item 22 – CASS Spot Check
+st.subheader("Item 22 – CASS Spot Check")
+item22 = st.selectbox("Select score for Item 22 (12, 8, 4, 0):", options=[12, 8, 4, 0], key="item22")
+comment_item22 = ""
+if item22 != 12:
+    comment_item22 = st.text_area("Enter comment for Item 22 (required):", key="comment_item22")
+
+# Item 23 – Designation Letters
+st.subheader("Item 23 – Designation Letters")
+item23 = st.selectbox("Select score for Item 23 (5, 3, 0):", options=[5, 3, 0], key="item23")
+comment_item23 = ""
+if item23 != 5:
+    comment_item23 = st.text_area("Enter comment for Item 23 (required):", key="comment_item23")
+
+# Item 24 – Job Box Review
+st.subheader("Item 24 – Job Box Review")
+item24 = st.selectbox("Select score for Item 24 (20, deduct as needed):", options=[20, 0], key="item24")
+# For Item 24, assume deductions are entered separately
+deduction24 = st.number_input("Enter deduction for Item 24 (0 to 20):", min_value=0, max_value=20, value=0, step=1, key="deduction24")
+calculated_item24 = 20 - deduction24
+comment_item24 = ""
+if deduction24 != 0:
+    comment_item24 = st.text_area("Enter comment for Item 24 (required for deduction):", key="comment_item24")
+
+# Item 25 – Review QC Package
+st.subheader("Item 25 – Review QC Package")
+item25 = st.selectbox("Select score for Item 25 (8, 6, 4, 0):", options=[8, 6, 4, 0], key="item25")
+comment_item25 = ""
+if item25 != 8:
+    comment_item25 = st.text_area("Enter comment for Item 25 (required):", key="comment_item25")
+
+# Item 26 – Submittals
+st.subheader("Item 26 – Submittals")
+item26 = st.selectbox("Select score for Item 26 (4, 2, 0):", options=[4, 2, 0], key="item26")
+comment_item26 = ""
+if item26 != 4:
+    comment_item26 = st.text_area("Enter comment for Item 26 (required):", key="comment_item26")
+
+# Item 27a – QC Inspection Plan
+st.subheader("Item 27a – QC Inspection Plan")
+item27a = st.selectbox("Select score for Item 27a (10, 7, 3, 0):", options=[10, 7, 3, 0], key="item27a")
+comment_item27a = ""
+if item27a != 10:
+    comment_item27a = st.text_area("Enter comment for Item 27a (required):", key="comment_item27a")
+
+# Item 27b – QC Inspection
+st.subheader("Item 27b – QC Inspection")
+item27b = st.selectbox("Select score for Item 27b (5, 0):", options=[5, 0], key="item27b")
+comment_item27b = ""
+if item27b != 5:
+    comment_item27b = st.text_area("Enter comment for Item 27b (required):", key="comment_item27b")
+
+# Item 28 – Job Box Review (QC)
+st.subheader("Item 28 – Job Box Review (QC)")
+deduction28 = st.number_input("Enter deduction for Item 28 (0 to 5):", min_value=0, max_value=5, value=0, step=1, key="deduction28")
+item28 = 5 - deduction28
+comment_item28 = ""
+if deduction28 != 0:
+    comment_item28 = st.text_area("Enter comment for Item 28 (required):", key="comment_item28")
+
+# Item 29 – Job Box Review (Safety)
 st.subheader("Item 29 – Job Box Review – Safety Plan & Daily Safety Reports")
 deduction29 = st.number_input("Enter deduction for Item 29 (0 to 5):", min_value=0, max_value=5, value=0, step=1, key="deduction29")
 item29 = 5 - deduction29
@@ -333,12 +544,63 @@ if deduction29 != 0:
 # -------------------------------------------------------------------
 if st.button("Calculate Final Score"):
     errors = []
-    # Validate comments for non-perfect items (sample validations)
+    # Sample validations (extend for all items as needed)
     if item1 != "Yes" and not comment_item1.strip():
         errors.append("Item 1 requires a comment.")
     if item2 != "Yes" and not comment_item2.strip():
         errors.append("Item 2 requires a comment.")
-    # ... add validations for all other items as needed ...
+    if item3 != "Yes" and not comment_item3.strip():
+        errors.append("Item 3 requires a comment.")
+    if item4_score != 16 and not comment_item4.strip():
+        errors.append("Item 4 requires a comment.")
+    if item5 != "Yes" and not comment_item5.strip():
+        errors.append("Item 5 requires a comment.")
+    if item6 != 4 and not comment_item6.strip():
+        errors.append("Item 6 requires a comment.")
+    if item78 != 4 and not comment_item78.strip():
+        errors.append("Items 7 & 8 require a comment.")
+    if item9 != 4 and not comment_item9.strip():
+        errors.append("Item 9 requires a comment.")
+    if item10 not in ["N/A", 4] and not comment_item10.strip():
+        errors.append("Item 10 requires a comment.")
+    if item11 != "Yes" and not comment_item11.strip():
+        errors.append("Item 11 requires a comment.")
+    if item12 != 4 and not comment_item12.strip():
+        errors.append("Item 12 requires a comment.")
+    if item13 != 4 and not comment_item13.strip():
+        errors.append("Item 13 requires a comment.")
+    if item14 != 10 and not comment_item14.strip():
+        errors.append("Item 14 requires a comment.")
+    if item15 != "Yes" and not comment_item15.strip():
+        errors.append("Item 15 requires a comment.")
+    if item16 != 10 and not comment_item16.strip():
+        errors.append("Item 16 requires a comment.")
+    if item17 != "Yes" and not comment_item17.strip():
+        errors.append("Item 17 requires a comment.")
+    if item18 != "Yes" and not comment_item18.strip():
+        errors.append("Item 18 requires a comment.")
+    if item19 != 5 and not comment_item19.strip():
+        errors.append("Item 19 requires a comment.")
+    if item20 != 6 and not comment_item20.strip():
+        errors.append("Item 20 requires a comment.")
+    if item21 != 6 and not comment_item21.strip():
+        errors.append("Item 21 requires a comment.")
+    if item22 != 12 and not comment_item22.strip():
+        errors.append("Item 22 requires a comment.")
+    if item23 != 5 and not comment_item23.strip():
+        errors.append("Item 23 requires a comment.")
+    if deduction24 != 0 and not comment_item24.strip():
+        errors.append("Item 24 requires a comment for the deduction.")
+    if item25 != 8 and not comment_item25.strip():
+        errors.append("Item 25 requires a comment.")
+    if item26 != 4 and not comment_item26.strip():
+        errors.append("Item 26 requires a comment.")
+    if item27a != 10 and not comment_item27a.strip():
+        errors.append("Item 27a requires a comment.")
+    if item27b != 5 and not comment_item27b.strip():
+        errors.append("Item 27b requires a comment.")
+    if deduction28 != 0 and not comment_item28.strip():
+        errors.append("Item 28 requires a comment for the deduction.")
     if deduction29 != 0 and not comment_item29.strip():
         errors.append("Item 29 requires a comment for the deduction.")
     
@@ -346,17 +608,29 @@ if st.button("Calculate Final Score"):
         for err in errors:
             st.error(err)
     else:
-        # Convert Yes/No to scores and compute totals (sample calculation)
+        # Convert Yes/No responses to scores
         score1 = 2 if item1 == "Yes" else 0
         score2 = 2 if item2 == "Yes" else 0
-        # ... compute scores for all items ...
-        score29 = item29  # For item 29
+        score3 = 4 if item3 == "Yes" else 0
+        score5 = 2 if item5 == "Yes" else 0
+        score11 = 4 if item11 == "Yes" else 0
+        score15 = 2 if item15 == "Yes" else 0
+        score17 = 2 if item17 == "Yes" else 0
+        score18 = 2 if item18 == "Yes" else 0
         
-        # For demonstration, assume a total score (replace with actual calculation)
-        total_score = score1 + score2 + score29  # Extend with all items
+        # For items with selectbox scores, use the numeric value
+        total_score = (
+            score1 + score2 + score3 + item4_score + score5 +
+            item6 + item78 + item9 +
+            (item10 if item10 != "N/A" else 0) +
+            score11 + item12 + item13 + item14 + score15 + item16 +
+            score17 + score18 + item19 + item20 + item21 + item22 +
+            item23 + calculated_item24 + item25 + item26 + item27a + item27b +
+            item28 + item29
+        )
         final_percentage = round(total_score / 175 * 100, 1)
         
-        # Build form_data dictionary
+        # Build the form_data dictionary for PDF generation.
         form_data = {
             "Project Name": proj_name,
             "Battalion": battalion,
@@ -368,8 +642,59 @@ if st.button("Calculate Final Score"):
             "Comment for Item 1": comment_item1,
             "Item 2 – Self Assessment Submission": item2,
             "Comment for Item 2": comment_item2,
-            # ... include all items 3 to 28 similarly ...
-            "Item 29 – Job Box Review – Safety Plan & Daily Safety Reports": f"Deduction: {deduction29}, Score: {item29}",
+            "Item 3 – Notice to Proceed (NTP)": item3,
+            "Comment for Item 3": comment_item3,
+            "Item 4 – Project Schedule": f"Planned: {planned_wip}%, Actual: {actual_wip}%, Score: {item4_score}",
+            "Comment for Item 4": comment_item4,
+            "Item 5 – Project Management": item5,
+            "Comment for Item 5": comment_item5,
+            "Item 6 – QA for 30 NCR Detail Sites": item6,
+            "Comment for Item 6": comment_item6,
+            "Item 7 & 8 – FAR/RFI": item78,
+            "Comment for Item 7 & 8": comment_item78,
+            "Item 9 – DFOW Sheet": item9,
+            "Comment for Item 9": comment_item9,
+            "Item 10 – Turnover Projects": item10,
+            "Comment for Item 10": comment_item10,
+            "Item 11 – Funds Provided": item11,
+            "Comment for Item 11": comment_item11,
+            "Item 12 – Estimate at Completion Cost (EAC)": item12,
+            "Comment for Item 12": comment_item12,
+            "Item 13 – Current Expenditures": item13,
+            "Comment for Item 13": comment_item13,
+            "Item 14 – Project Material Status Report (PMSR)": item14,
+            "Comment for Item 14": comment_item14,
+            "Item 15 – Report Submission": item15,
+            "Comment for Item 15": comment_item15,
+            "Item 16 – Materials On-Hand": item16,
+            "Comment for Item 16": comment_item16,
+            "Item 17 – DD Form 200": item17,
+            "Comment for Item 17": comment_item17,
+            "Item 18 – Borrowed Material Tickler File": item18,
+            "Comment for Item 18": comment_item18,
+            "Item 19 – Project Brief": item19,
+            "Comment for Item 19": comment_item19,
+            "Item 20 – Calculate Manday Capability": item20,
+            "Comment for Item 20": comment_item20,
+            "Item 21 – Equipment": item21,
+            "Comment for Item 21": comment_item21,
+            "Item 22 – CASS Spot Check": item22,
+            "Comment for Item 22": comment_item22,
+            "Item 23 – Designation Letters": item23,
+            "Comment for Item 23": comment_item23,
+            "Item 24 – Job Box Review": f"Deduction: {deduction24}, Score: {calculated_item24}",
+            "Comment for Item 24": comment_item24,
+            "Item 25 – Review QC Package": item25,
+            "Comment for Item 25": comment_item25,
+            "Item 26 – Submittals": item26,
+            "Comment for Item 26": comment_item26,
+            "Item 27a – QC Inspection Plan": item27a,
+            "Comment for Item 27a": comment_item27a,
+            "Item 27b – QC Inspection": item27b,
+            "Comment for Item 27b": comment_item27b,
+            "Item 28 – Job Box Review (QC)": f"Deduction: {deduction28}, Score: {item28}",
+            "Comment for Item 28": comment_item28,
+            "Item 29 – Job Box Review (Safety)": f"Deduction: {deduction29}, Score: {item29}",
             "Comment for Item 29": comment_item29,
             "Final Score": total_score,
             "Final Percentage": final_percentage,
