@@ -4,7 +4,7 @@ import io
 import os
 
 # -------------------------------------------------------------------
-# Helper functions
+# Helper Functions
 # -------------------------------------------------------------------
 def sanitize(text):
     """Replace problematic Unicode dashes with a standard hyphen."""
@@ -13,9 +13,7 @@ def sanitize(text):
     return text
 
 def wrap_text(pdf, text, cell_width):
-    """
-    Splits text into a list of lines that fit within the given cell width.
-    """
+    """Splits text into lines that fit within cell_width."""
     words = text.split()
     lines = []
     current_line = ""
@@ -31,8 +29,8 @@ def wrap_text(pdf, text, cell_width):
     return lines
 
 # -------------------------------------------------------------------
-# Mapping dictionary with amplifying info for items 1–29.
-# (Update these strings as needed to match your CQI Handbook.)
+# Handbook Amplifying Info for Items 1–29 (sample text; update as needed)
+# -------------------------------------------------------------------
 handbook_info = {
     "Item 1 – Self Assessment": "Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)",
     "Item 2 – Self Assessment Submission": "Were the self-assessment results submitted to 30 NCR SharePoint at least 7 days prior to inspection? (Yes = 2 pts, No = 0 pts)",
@@ -46,14 +44,14 @@ handbook_info = {
     "Item 11 – Funds Provided": "Are project funds tracked? (4 pts = Monitored; 0 pts = Not monitored)",
     "Item 12 – Estimate at Completion Cost (EAC)": "EAC accuracy. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Low accuracy; 0 pts = ≤59% accuracy)",
     "Item 13 – Current Expenditures": "Verify current expenditures. (4 pts = Accurate; 3 pts = Acceptable; 2 pts = Discrepancies; 0 pts = ≤59% accuracy)",
-    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2 or 0 pts otherwise)",
+    "Item 14 – Project Material Status Report (PMSR)": "Inspect PMSR. (10 pts = 100% valid; 8 pts = Acceptable; 4 pts = Discrepancies; 2/0 pts otherwise)",
     "Item 15 – Report Submission": "Are PMSR and EAC reports routed monthly? (2 pts = Yes; 0 pts = No)",
     "Item 16 – Materials On-Hand": "Materials on-hand verification. (10 pts = Organized; 8 pts = Minor issues; 4 pts = Multiple issues; 0 pts = Unsatisfactory)",
     "Item 17 – DD Form 200": "DD Form 200 status. (2 pts = Correct; 0 pts = Not maintained)",
     "Item 18 – Borrowed Material Tickler File": "Borrow log verification. (2 pts = Valid; 0 pts = Not managed)",
-    "Item 19 – Project Brief": "Project brief quality. (5 pts = Detailed; 3 pts = Acceptable; 2 or 0 pts otherwise)",
+    "Item 19 – Project Brief": "Project brief quality. (5 pts = Detailed; 3 pts = Acceptable; 2/0 pts otherwise)",
     "Item 20 – Calculate Manday Capability": "Crew composition & MD capability. (6 pts = Matches; 4/2/0 pts otherwise)",
-    "Item 21 – Equipment": "Equipment adequacy. (6 pts = All onsite; 4 pts = Acceptable; 2 or 0 pts otherwise)",
+    "Item 21 – Equipment": "Equipment adequacy. (6 pts = All onsite; 4 pts = Acceptable; 2/0 pts otherwise)",
     "Item 22 – CASS Spot Check": "CASS review. (12 pts = 100% compliant; 8/4/0 pts otherwise)",
     "Item 23 – Designation Letters": "Designation letters status. (5 pts = Current; 3 pts = Not up-to-date; 0 pts = Missing)",
     "Item 24 – Job Box Review": "Review jobsite board items. (20 pts maximum; deductions apply)",
@@ -77,7 +75,6 @@ class PDF(FPDF):
     
     def header(self):
         self.set_font("DejaVu", "", 16)
-        # Print header in all caps
         self.cell(0, 10, "CQI REPORT", ln=1, align="C")
         self.ln(5)
     
@@ -96,60 +93,52 @@ def generate_pdf(handbook_details, form_data):
     pdf.set_font("DejaVu", "", 12)
     
     effective_width = pdf.w - pdf.l_margin - pdf.r_margin
-    left_width = effective_width * 0.8   # 80% for item question + amplifying info
-    score_width = effective_width * 0.2  # 20% for score (centered)
+    left_width = effective_width * 0.8    # 80% for item + amplifying info
+    score_width = effective_width * 0.2   # 20% for score
     line_height = 8
     
-    # Table header (optional)
+    # Optional header for the table
     pdf.set_font("Arial", "B", 12)
     pdf.cell(left_width, line_height, "ITEM & INFO", border=1, align="C")
     pdf.cell(score_width, line_height, "SCORE", border=1, align="C")
     pdf.ln(line_height)
     pdf.set_font("DejaVu", "", 12)
     
-    # For each item, print a two-row block:
-    # Row 1: Left cell = ITEM QUESTION (all caps with colon) + amplifying info (separated by newline)
-    #         Right cell = numerical score (centered)
-    # Then, if a comment exists, print a full-width row with the comment.
+    # For each item...
     for item, info in handbook_details.items():
-        # Prepare left cell text (all uppercase)
+        # Compose left text: item (in all caps with colon) and amplifying info.
         left_text = f"{item.upper()}: {info}"
-        # Prepare score text from form_data.
+        # Get the score from form_data.
         score = form_data.get(item, "")
-        right_text = f"{score}"
-        
-        # Wrap the left and right texts.
+        # Wrap texts.
         left_lines = wrap_text(pdf, left_text, left_width)
-        right_lines = wrap_text(pdf, right_text, score_width)
-        # Determine the total height needed for the item block.
-        # We want one single rectangle for the left cell.
-        num_lines = max(len(left_lines), len(right_lines))
-        block_height = num_lines * line_height
+        score_lines = wrap_text(pdf, f"{score}", score_width)
+        # Determine the block height.
+        block_lines = max(len(left_lines), len(score_lines))
+        block_height = block_lines * line_height
         
         # Save current position.
         start_x = pdf.get_x()
         start_y = pdf.get_y()
         
-        # Print left cell text without borders.
+        # Print left cell (without internal horizontal borders)
         pdf.set_xy(start_x, start_y)
         pdf.multi_cell(left_width, line_height, left_text, border=0)
         # Draw one rectangle around the left cell.
         pdf.rect(start_x, start_y, left_width, block_height)
         
-        # Print right cell: score (centered) with no internal borders.
+        # Print right cell: score, centered.
         pdf.set_xy(start_x + left_width, start_y)
-        pdf.multi_cell(score_width, line_height, right_text, border=0, align="C")
+        pdf.multi_cell(score_width, line_height, f"{score}", border=0, align="C")
         pdf.rect(start_x + left_width, start_y, score_width, block_height)
         
-        # Move the cursor to the next row.
+        # Move to next line.
         pdf.set_xy(start_x, start_y + block_height)
         
-        # If a comment exists, print a full-width row for it.
+        # If a comment exists, print a full-width comment row.
         comment = form_data.get(f"Comment for {item}", "")
         if comment.strip():
             comment_text = f"COMMENT: {comment}"
-            comment_lines = wrap_text(pdf, comment_text, effective_width)
-            comment_height = len(comment_lines) * line_height
             pdf.multi_cell(effective_width, line_height, comment_text, border=1)
     
     # --- Final Results Section ---
@@ -171,7 +160,7 @@ def generate_pdf(handbook_details, form_data):
 # -------------------------------------------------------------------
 st.title("Construction Quality Inspection (CQI) Assessment Tool")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
-st.write("Fill out the fields below. For any item that does not achieve the perfect score, a comment is required. The final PDF will display each item (in all caps) with its amplifying info alongside your score and, if applicable, a full-width comment row.")
+st.write("Fill out the fields below. For any item that does not achieve the perfect score, a comment is required. In the final PDF, each item will display its question and amplifying info (in all caps) in one box and your numerical score in a narrow, centered column. If you provide any comments, they will appear in a full-width row below the item.")
 
 # --- Project Information ---
 st.header("Project Information")
@@ -185,9 +174,8 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# For each item, display the item question (with amplifying info) together.
-# The key for the score is the same as the handbook key.
-# Comments will be stored under "Comment for {item}".
+# For each item, display the item subheader, then show the amplifying info (via st.info),
+# then provide input widgets for score and comment.
 # Item 1
 st.subheader("Item 1 – Self Assessment")
 st.info(handbook_info["Item 1 – Self Assessment"])
@@ -207,7 +195,7 @@ comment_item3 = st.text_area("Comment (if not perfect):", key="Comment for Item 
 st.subheader("Item 4 – Project Schedule")
 st.info(handbook_info["Item 4 – Project Schedule"])
 st.markdown(
-    "Score is based on the percentage difference between planned and actual work-in-place.\n"
+    "Score is based on the difference between planned and actual work-in-place.\n"
     "Exact = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts."
 )
 total_md = st.number_input("Total Project Mandays:", value=1000, step=1, key="total_md")
@@ -363,7 +351,7 @@ comment_item29 = st.text_area("Comment (if deduction applied):", key="Comment fo
 # -------------------------------------------------------------------
 if st.button("Calculate Final Score"):
     errors = []
-    # Sample validations (extend as needed)
+    # (Sample validations; extend for all items as needed)
     if item1 != "Yes" and not comment_item1.strip():
         errors.append("Item 1 requires a comment.")
     if item2 != "Yes" and not comment_item2.strip():
@@ -437,7 +425,7 @@ if st.button("Calculate Final Score"):
         score17 = 2 if item17 == "Yes" else 0
         score18 = 2 if item18 == "Yes" else 0
         
-        # Sample total score calculation (extend as needed).
+        # Sample total score calculation (extend this logic as needed).
         total_score = (
             score1 + score2 + score3 + item4_score + score5 +
             item6 + item78 + item9 +
@@ -449,7 +437,7 @@ if st.button("Calculate Final Score"):
         )
         final_percentage = round(total_score / 175 * 100, 1)
         
-        # Build form_data for PDF generation.
+        # Build the form_data dictionary for PDF generation.
         form_data = {
             "Project Name": proj_name,
             "Battalion": battalion,
