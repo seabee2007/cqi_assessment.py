@@ -2,4 +2,6 @@ streamlit
 pandas
 numpy
 fpdf
+streamlit-drawable-canvas
+
 # Add any other dependencies below
