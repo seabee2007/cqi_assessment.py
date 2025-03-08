@@ -13,7 +13,7 @@ def sanitize(text):
 
 # -------------------------------------------------------------------
 # Handbook Amplifying Info for Items 1–29
-# Update these strings to match your official CQI Handbook.
+# Update these strings as needed to match your official CQI Handbook.
 # -------------------------------------------------------------------
 handbook_info = {
     "Item 1 – Self Assessment": "Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)",
@@ -49,7 +49,7 @@ handbook_info = {
 
 # -------------------------------------------------------------------
 # Define Perfect Scores for Each Item
-# (These values should reflect the maximum points for each item.)
+# Update these values as required.
 # -------------------------------------------------------------------
 perfect_scores = {
     "Item 1 – Self Assessment": 2,
@@ -60,7 +60,7 @@ perfect_scores = {
     "Item 6 – QA for 30 NCR Detail Sites": 4,
     "Item 7 & 8 – FAR/RFI": 4,
     "Item 9 – DFOW Sheet": 4,
-    "Item 10 – Turnover Projects": 4,  # or "N/A" is acceptable
+    "Item 10 – Turnover Projects": 4,
     "Item 11 – Funds Provided": 4,
     "Item 12 – Estimate at Completion Cost (EAC)": 4,
     "Item 13 – Current Expenditures": 4,
@@ -81,6 +81,29 @@ perfect_scores = {
     "Item 27b – QC Inspection": 5,
     "Item 28 – Job Box Review (QC)": 5,
     "Item 29 – Job Box Review (Safety)": 5,
+}
+
+# -------------------------------------------------------------------
+# Define which items use Yes/No responses and their corresponding scores.
+# -------------------------------------------------------------------
+yes_no_items = [
+    "Item 1 – Self Assessment",
+    "Item 2 – Self Assessment Submission",
+    "Item 3 – Notice to Proceed (NTP)",
+    "Item 5 – Project Management",
+    "Item 11 – Funds Provided",
+    "Item 17 – DD Form 200",
+    "Item 18 – Borrowed Material Tickler File"
+]
+
+yes_no_scores = {
+    "Item 1 – Self Assessment": 2,
+    "Item 2 – Self Assessment Submission": 2,
+    "Item 3 – Notice to Proceed (NTP)": 4,
+    "Item 5 – Project Management": 2,
+    "Item 11 – Funds Provided": 4,
+    "Item 17 – DD Form 200": 2,
+    "Item 18 – Borrowed Material Tickler File": 2,
 }
 
 # -------------------------------------------------------------------
@@ -190,7 +213,7 @@ def generate_html(form_data, handbook_info, perfect_scores):
     return html
 
 # -------------------------------------------------------------------
-# Main App – Data Input (Production Ready)
+# Main App – Production Data Input
 # -------------------------------------------------------------------
 st.title("CQI Assessment Tool - Printable Form")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
@@ -217,19 +240,32 @@ form_data = {
 
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
+
 # Loop through each checklist item.
 for item in handbook_info:
     st.subheader(item)
     st.info(handbook_info[item])
-    # Use a number_input for numeric score.
-    score = st.number_input(f"Enter score for {item}:", key=item)
-    comment = st.text_area(f"Enter comment for {item} (required if score below perfect):", key="Comment for " + item)
-    form_data[item] = score
-    form_data["Comment for " + item] = comment
+    # For yes/no items, use radio buttons.
+    if item in yes_no_items:
+        resp = st.radio(f"Enter response for {item}:", options=["Yes", "No"], key=item)
+        # Automatically set score based on response.
+        score = yes_no_scores.get(item, 0) if resp == "Yes" else 0
+        form_data[item] = score
+        # Require a comment if the response is not perfect ("Yes").
+        comment = st.text_area(f"Enter comment for {item} (required if response is not 'Yes'):", key="Comment for " + item) if resp != "Yes" else ""
+        form_data["Comment for " + item] = comment
+    else:
+        # For numeric items, use number_input (whole numbers only).
+        score = st.number_input(f"Enter score for {item}:", key=item, step=1)
+        form_data[item] = score
+        # Show comment input only if the score is below the perfect score.
+        comment = st.text_area(f"Enter comment for {item} (required if score is below {perfect_scores.get(item, 'perfect')}):", key="Comment for " + item) if score < perfect_scores.get(item, score) else ""
+        form_data["Comment for " + item] = comment
 
 # Calculate final score.
-# (This assumes all scores are numeric; adjust logic as needed.)
-total_score = sum(form_data[item] for item in handbook_info if isinstance(form_data[item], (int, float)))
+# (Assumes all scores are numeric. Adjust logic as needed.)
+numeric_scores = [form_data[item] for item in handbook_info if isinstance(form_data[item], (int, float))]
+total_score = sum(numeric_scores)
 final_percentage = round(total_score / 175 * 100, 1)
 form_data["Final Score"] = total_score
 form_data["Final Percentage"] = final_percentage
