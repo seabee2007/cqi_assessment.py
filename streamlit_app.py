@@ -487,7 +487,7 @@ if st.button("Print Full Report", key="print_full_report"):
     start = start_date.strftime("%Y-%m-%d") if isinstance(start_date, datetime.date) else start_date
     planned_start_str = planned_start.strftime("%Y-%m-%d") if isinstance(planned_start, datetime.date) else planned_start
     planned_completion_str = planned_completion.strftime("%Y-%m-%d") if isinstance(planned_completion, datetime.date) else planned_completion
-    
+    actual_completion_str = actual_completion.strftime("%Y-%m-%d") if isinstance(actual_completion, datetime.date) else actual_completion
     
     # Convert signature canvas image data to base64 images
     oic_base64 = image_to_base64(canvas_result_oic.image_data)
@@ -613,7 +613,7 @@ if st.button("Print Full Report", key="print_full_report"):
       </tr>
     """
     
-    # Build the comments section: all non-empty comments appear together.
+    # Build the comments section: all comments appear together.
     comment_sections = ""
     comments_list = [
         ("Item 1 – Self Assessment", comment_item1),
@@ -660,8 +660,8 @@ if st.button("Print Full Report", key="print_full_report"):
       <head>
         <style>
           body {{ font-family: Arial, sans-serif; margin: 20px; }}
-          table {{ width: 100%; height: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-          th, td {{ border: 1px solid #000; padding: 6px; text-align: left; }}
+          table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+          th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
           th {{ background-color: #f2f2f2; }}
           .assessment-table tr td:nth-child(1),
           .assessment-table tr td:nth-child(2) {{
@@ -682,7 +682,7 @@ if st.button("Print Full Report", key="print_full_report"):
         <p><strong>Start Date:</strong> {start}</p>
         <p><strong>Planned Start:</strong> {planned_start_str}</p>
         <p><strong>Planned Completion:</strong> {planned_completion_str}</p>
-       
+        <p><strong>Actual Completion:</strong> {actual_completion_str}</p>
         
         <h3>Assessment Details</h3>
         <table class="assessment-table">
@@ -694,13 +694,13 @@ if st.button("Print Full Report", key="print_full_report"):
         </table>
         
         <h3>Final Score</h3>
-        <p><strong>Final Score:</strong> {final_score} out of 175</p>
+        <p><strong>Final Score:</strong> {final_score} out of 171</p>
         <p><strong>Final Percentage:</strong> {final_percentage}%</p>
         
         <h3>Signatures</h3>
-        <h4>OIC Signature:</h4>
+        <h4>OIC Signature: {oic_name}</h4>
         <img src="data:image/png;base64,{oic_base64}" class="signature"/>
-        <h4>30 NCR Signature:</h4>
+        <h4>AOIC Signature: {aoic}</h4>
         <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
         
         <!-- Single page break before starting comments -->
