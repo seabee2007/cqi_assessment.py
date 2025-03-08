@@ -108,75 +108,204 @@ handbook_info = {
 import streamlit as st
 import emoji
 
-# Initialize calculator expression in session state if not already set
-if "calc_expr" not in st.session_state:
-    st.session_state.calc_expr = ""
+st.set_page_config(
+    page_title='KenGik Calculator - Basic Edition',
+    page_icon='🧮'
+)
 
-# Define calculator functions
-def update_calc(val):
-    st.session_state.calc_expr += str(val)
+# ------------------ Session State Initialization ------------------
+if 'result' not in st.session_state:
+    st.session_state.result = 0
+if 'previous_result' not in st.session_state:
+    st.session_state.previous_result = ['None']
+if 'first_num' not in st.session_state:
+    st.session_state.first_num = 0
+if 'second_num' not in st.session_state:
+    st.session_state.second_num = 0
+if 'operations' not in st.session_state:
+    st.session_state.operations = 'Add (+)'
+if 'disable_calculate' not in st.session_state:
+    st.session_state.disable_calculate = False
 
-def clear_calc():
-    st.session_state.calc_expr = ""
+# ------------------ Operation Dictionary ------------------
+operation_dict = {"Add (+)": "+", "Subtract (-)": "-", "Multiply (×)": "×", "Divide (÷)": "÷"}
 
-def evaluate_calc():
+# ------------------ Functions ------------------
+def calculate():
     try:
-        st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
-    except Exception:
-        st.session_state.calc_expr = "Error"
+        # Use the operation selected from radio button
+        if operation == "Add (+)":
+            st.session_state.result = st.session_state.first_num + st.session_state.second_num
+        elif operation == "Subtract (-)":
+            st.session_state.result = st.session_state.first_num - st.session_state.second_num
+        elif operation == "Multiply (×)":
+            st.session_state.result = st.session_state.first_num * st.session_state.second_num
+        elif operation == "Divide (÷)":
+            st.session_state.result = st.session_state.first_num / st.session_state.second_num
 
-# Create a sidebar expander that acts like a floating calculator.
+        if 'None' in st.session_state.previous_result:
+            st.session_state.previous_result.clear()
+        
+        if len(st.session_state.previous_result) > 4:
+            st.session_state.previous_result.clear()
+            st.session_state.previous_result.append(str(st.session_state.result))
+        else:
+            st.session_state.previous_result.append('%g'%(float(st.session_state.result)))
+    except ZeroDivisionError as e:
+        st.session_state.result = '#DIV/0!'
+        st.toast(body=f'{e}!'.capitalize(), icon='❌')
+
+def reset_all():
+    st.session_state.pop('first_num')
+    st.session_state.pop('second_num')
+    st.session_state.pop('result')
+    st.session_state.previous_result.clear()
+    st.session_state.previous_result.append('None')
+    st.toast(body='Reset Successfully!', icon='✅')
+
+def auto_calculator():
+    if not auto_calculate:
+        st.session_state.disable_calculate = True
+    else:
+        st.session_state.disable_calculate = False
+
+# ------------------ Auto-Calculate (if enabled) ------------------
+if st.session_state.disable_calculate:
+    try:
+        if st.session_state.operations == "Add (+)":
+            st.session_state.result = st.session_state.first_num + st.session_state.second_num
+        elif st.session_state.operations == "Subtract (-)":
+            st.session_state.result = st.session_state.first_num - st.session_state.second_num
+        elif st.session_state.operations == "Multiply (×)":
+            st.session_state.result = st.session_state.first_num * st.session_state.second_num
+        elif st.session_state.operations == "Divide (÷)":
+            st.session_state.result = st.session_state.first_num / st.session_state.second_num
+    except ZeroDivisionError as e:
+        st.session_state.result = '#DIV/0!'
+        st.toast(body=f'{e}!'.capitalize(), icon='❌')
+
+# ------------------ Sidebar (Navigation & Theme) ------------------
+with st.sidebar:
+    st.html('<h1 style="text-align:center;font-size:40px;">Edition</h1>')
+    st.link_button(label='Basic', url='https://kengik-calculator-basic.streamlit.app/', use_container_width=True)
+    st.link_button(label='Advanced', url='https://kengik-calculator-advanced.streamlit.app/', use_container_width=True)
+    st.markdown('You are using: **Basic Edition**')
+    st.divider()
+    st.html('<h1 style="text-align:center;font-size:40px;">Theme</h1>')
+    theme_color = st.color_picker(label='Pick a Theme Color', value='#1467f0', help='Change Theme Color')
+    st.markdown(f'''<p>• Default Color: <b>#1467F0</b></p>
+                <p>• Current Color: <b>{theme_color.upper()}</b></p>''', unsafe_allow_html=True)
+    st.divider()
+    st.markdown('[![Streamlit](https://img.shields.io/badge/Made%20with%20-Streamlit-red)](https://streamlit.io/)')
+
+# CSS styling for buttons
+st.html(f"""
+<style>
+div.stButton>button:hover {{
+    border: 1px solid {theme_color};
+    color: {theme_color};
+}}
+div.stButton>button:active {{
+    background-color: {theme_color};
+    color: white;
+}}
+</style>
+""")
+
+st.markdown(f'<h1 style="color:{theme_color};text-align:center;font-size:52px;"><b>KenGik Calculator</b></h1>', unsafe_allow_html=True)
+
+# ------------------ Disclaimer ------------------
+st.html(f"""
+<details>
+<summary><strong>Disclaimer</strong></summary>
+<pre>This is <b>Basic Edition of</b> <span style="color:{theme_color}"><b>KenGik Calculator</b></span>. You can use this for <i>simple</i> and <i>quick</i> Calculation!</pre>
+</details>
+""")
+
+# ------------------ Main Calculator UI ------------------
+st.html(f'<h5 style="font-size:18.5px"><span style="color:{theme_color};">First</span> Number</h5>')
+first_number = st.number_input(label="t", step=0.1, help='Enter a first number', label_visibility='collapsed',
+                                 format='%1.1f', placeholder="Enter a First Number", key='first_num')
+st.html(f'<h5 style="font-size:18.5px"><span style="color:{theme_color}">Second</span> Number</h5>')
+second_number = st.number_input(label="t", step=0.1, help='Enter a second number', label_visibility='collapsed',
+                                  format='%1.1f', placeholder="Enter a Second Number", key='second_num')
+st.write("<h5 style='font-size:18.5px;'>Operation</h5>", unsafe_allow_html=True)
+st.html('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>')
+operation = st.radio(label='Select an operation', options=["Add (+)", "Subtract (-)", "Multiply (×)", "Divide (÷)"], key='operations')
+st.write('<h5 style="font-size:18.5px">Calculation</h5>', unsafe_allow_html=True)
+if st.session_state.result != '#DIV/0!':
+    st.markdown('<span style="color:%s"><b>Equation:</b></span> &nbsp; %g %s %g = **%g**' %
+                (theme_color, st.session_state.first_num, operation_dict[st.session_state.operations],
+                 st.session_state.second_num, float(st.session_state.result)), unsafe_allow_html=True)
+else:
+    st.markdown('<span style="color:%s"><b>Equation:</b></span> &nbsp; %g %s %g = **%s**' %
+                (theme_color, st.session_state.first_num, operation_dict[st.session_state.operations],
+                 st.session_state.second_num, st.session_state.result), unsafe_allow_html=True)
+                 
+submit = st.button(label='Calculate', use_container_width=True, on_click=calculate,
+                   disabled=st.session_state.disable_calculate)
+reset = st.button(label='Reset', use_container_width=True, on_click=reset_all)
+st.markdown(f'<span style="color:{theme_color}"><b>Previous Results:</b></span> &nbsp; {"  ;  ".join(st.session_state.previous_result)}',
+            unsafe_allow_html=True)
+auto_calculate = st.checkbox(label='**Auto-Calculate**', on_change=auto_calculator)
+st.write('''<p style="color:#8c8c8c">When Auto-Calculate is enabled, the calculation will automatically calculate and return results.
+         This feature will not keep previous results.</p>''', unsafe_allow_html=True)
+
+# ------------------ Calculator Modal in Sidebar ------------------
+# (This is our "modal" calculator integrated into the sidebar.)
 with st.sidebar.expander("Calculator " + emoji.emojize(":abacus:"), expanded=True):
-    # Display the current calculator expression in a read-only text input
-    st.text_input("Expression", value=st.session_state.calc_expr, key="calc_display", disabled=True)
-    
-    # Arrange calculator buttons in a grid
-    col1, col2, col3, col4 = st.columns(4)
-    if col1.button("7", key="btn7"):
-        update_calc("7")
-    if col2.button("8", key="btn8"):
-        update_calc("8")
-    if col3.button("9", key="btn9"):
-        update_calc("9")
-    if col4.button("/", key="btn_div"):
-        update_calc("/")
+    st.markdown("### Calculator")
+    st.text_input("Expression", value=st.session_state.get("calc_expr", ""), key="calc_display", disabled=True)
     
     col1, col2, col3, col4 = st.columns(4)
-    if col1.button("4", key="btn4"):
-        update_calc("4")
-    if col2.button("5", key="btn5"):
-        update_calc("5")
-    if col3.button("6", key="btn6"):
-        update_calc("6")
-    if col4.button("*", key="btn_mul"):
-        update_calc("*")
+    if col1.button("7", key="calc_btn7"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "7"
+    if col2.button("8", key="calc_btn8"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "8"
+    if col3.button("9", key="calc_btn9"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "9"
+    if col4.button("/", key="calc_btn_div"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "/"
     
     col1, col2, col3, col4 = st.columns(4)
-    if col1.button("1", key="btn1"):
-        update_calc("1")
-    if col2.button("2", key="btn2"):
-        update_calc("2")
-    if col3.button("3", key="btn3"):
-        update_calc("3")
-    if col4.button("-", key="btn_sub"):
-        update_calc("-")
+    if col1.button("4", key="calc_btn4"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "4"
+    if col2.button("5", key="calc_btn5"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "5"
+    if col3.button("6", key="calc_btn6"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "6"
+    if col4.button("*", key="calc_btn_mul"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "*"
     
     col1, col2, col3, col4 = st.columns(4)
-    if col1.button("0", key="btn0"):
-        update_calc("0")
-    if col2.button(".", key="btn_dot"):
-        update_calc(".")
-    if col3.button("=", key="btn_eq"):
-        evaluate_calc()
-    if col4.button("+", key="btn_add"):
-        update_calc("+")
+    if col1.button("1", key="calc_btn1"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "1"
+    if col2.button("2", key="calc_btn2"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "2"
+    if col3.button("3", key="calc_btn3"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "3"
+    if col4.button("-", key="calc_btn_sub"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "-"
     
-    # Clear button
-    if st.button("Clear", key="btn_clear"):
-        clear_calc()
-
-# Display the current expression below (for debugging / confirmation)
-st.write("Current Expression:", st.session_state.calc_expr)
+    col1, col2, col3, col4 = st.columns(4)
+    if col1.button("0", key="calc_btn0"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "0"
+    if col2.button(".", key="calc_btn_dot"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "."
+    if col3.button("=", key="calc_btn_eq"):
+        try:
+            st.session_state.calc_expr = str(eval(st.session_state.get("calc_expr", "")))
+        except Exception:
+            st.session_state.calc_expr = "Error"
+    if col4.button("+", key="calc_btn_add"):
+        st.session_state.calc_expr = st.session_state.get("calc_expr", "") + "+"
+    
+    if st.button("Clear", key="calc_btn_clear"):
+        st.session_state.calc_expr = ""
+    
+    st.write("Calculator Expression:", st.session_state.get("calc_expr", ""))
+    
+# ------------------ End of App ------------------
 
 
 
