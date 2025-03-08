@@ -10,12 +10,11 @@ import os
 st.markdown(
     """
     <style>
-    /* Hide elements with the "no-print" class when printing */
-    .no-print {
-        display: none;
-    }
-    /* Style adjustments for printing */
+    /* Only hide elements with the "no-print" class when printing */
     @media print {
+        .no-print {
+            display: none;
+        }
         body {
             margin: 20px;
             font-size: 12pt;
@@ -28,6 +27,22 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# -------------------------------------------------------------------
+# Top Section: Display Final Score Data if Available
+# -------------------------------------------------------------------
+if "final_score" in st.session_state:
+    st.markdown(
+        f"""
+        <div style="background-color:#f0f2f6; padding:10px; margin-bottom:20px;">
+            <h3>Project: {st.session_state.get("proj_name", "N/A")}</h3>
+            <h4>Battalion: {st.session_state.get("battalion", "N/A")}</h4>
+            <h3>Final Score: {st.session_state.final_score} out of 175</h3>
+            <h4>Final Percentage: {st.session_state.final_percentage}%</h4>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # -------------------------------------------------------------------
 # Helper Functions
@@ -83,7 +98,7 @@ st.write("Fill out the fields below. For any item that does not achieve the perf
 # --- Project Information ---
 st.header("Project Information")
 proj_name_input = st.text_input("Project Name:", key="proj_name_input")
-battalion = st.text_input("Battalion Name:", key="battalion_input")
+battalion_input = st.text_input("Battalion Name:", key="battalion_input")
 start_date = st.date_input("Start Date:", key="start_date_input")
 planned_start = st.date_input("Planned Start Date:", key="planned_start_input")
 planned_completion = st.date_input("Planned Completion Date:", key="planned_completion_input")
@@ -369,7 +384,6 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         score17 = 2 if item17 == "Yes" else 0
         score18 = 2 if item18 == "Yes" else 0
         
-        # Sample total score calculation (extend this logic as needed).
         total_score = (
             score1 + score2 + score3 + item4_score + score5 +
             item6 + item78 + item9 +
@@ -381,16 +395,28 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         )
         final_percentage = round(total_score / 175 * 100, 1)
        
+        # Save results and project info to session state.
         st.session_state.final_score = total_score
         st.session_state.final_percentage = final_percentage
+        st.session_state.proj_name = proj_name_input
+        st.session_state.battalion = battalion_input
+        
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
 # -------------------------------------------------------------------
-# Print instructions (won't be printed because of the no-print class)
+# Bottom Display of Final Score (will be cleared on rerun but it's here as requested)
 # -------------------------------------------------------------------
-if st.button("Print This Page"):
+if "final_score" in st.session_state:
+    st.success("Final Score Calculated!")
+    st.write("**Final Score:**", st.session_state.final_score, "out of 175")
+    st.write("**Final Percentage:**", st.session_state.final_percentage, "%")
+
+# -------------------------------------------------------------------
+# Print instructions using a widget button
+# -------------------------------------------------------------------
+if st.button("Print This Page", key="print_button"):
     st.components.v1.html(
         """
         <script>
