@@ -119,7 +119,6 @@ actual_completion = st.date_input("Actual Completion Date:", key="actual_complet
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# (Items 1 to 29 are below; for brevity, the code is similar to your original script)
 # --- Item 1 ---
 st.subheader("Item 1 – Self Assessment")
 st.info(handbook_info["Item 1 – Self Assessment"])
@@ -317,14 +316,12 @@ st.info(handbook_info["Item 29 – Job Box Review (Safety)"])
 deduction29 = st.number_input("Enter deduction for Item 29 (0 to 5):", min_value=0, max_value=5, value=0, step=1, key="deduction29_input")
 item29 = 5 - deduction29
 comment_item29 = st.text_area("Comment (if deduction applied):", key="item29_comment") if deduction29 != 0 else ""
-
 # --- Calculate Final Score ---
 if st.button("Calculate Final Score", key="calculate_final_score"):
     errors = []
-    # (Perform your validations for each item here. For example:)
     if item1 != "Yes" and not comment_item1.strip():
         errors.append("Item 1 requires a comment.")
-    # ... additional validations for all items ...
+    # ... additional validations for other items ...
     
     if errors:
         for err in errors:
@@ -357,42 +354,8 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
-# --- Print Page Button ---
-if st.button("Print This Page", key="print_button"):
-    final_score = st.session_state.get("final_score", "N/A")
-    final_percentage = st.session_state.get("final_percentage", "N/A")
-    
-    oic_base64 = image_to_base64(canvas_result_oic.image_data)
-    ncr_base64 = image_to_base64(canvas_result_30ncr.image_data)
-    
-    html_content = f"""
-    <html>
-      <head>
-        <style>
-          body {{ font-family: Arial, sans-serif; margin: 20px; }}
-          .signature {{ border: 1px solid #000; width: 500px; height: 150px; }}
-          h2, h3 {{ text-align: center; }}
-        </style>
-      </head>
-      <body>
-        <h2>Final Score: {final_score} out of 175</h2>
-        <h3>Final Percentage: {final_percentage}%</h3>
-        <h4>OIC Signature:</h4>
-        <img src="data:image/png;base64,{oic_base64}" class="signature"/>
-        <h4>30 NCR Signature:</h4>
-        <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
-        <script>
-          window.onload = function() {{
-             window.print();
-          }};
-        </script>
-      </body>
-    </html>
-    """
-    components.html(html_content, height=600)
-
 # --- Signature Blocks Section ---
-# Define a default canvas dictionary (if not already defined)
+# Define a default canvas dictionary
 default_canvas = {"background": "#FFF", "objects": []}
 
 with st.form("signature_form"):
@@ -430,3 +393,37 @@ with st.form("signature_form"):
         st.session_state.oic_signature_data = canvas_result_oic.json_data
         st.session_state.ncr_signature_data = canvas_result_30ncr.json_data
         st.success("Signatures Saved!")
+
+# --- Print Page Button ---
+if st.button("Print This Page", key="print_button"):
+    final_score = st.session_state.get("final_score", "N/A")
+    final_percentage = st.session_state.get("final_percentage", "N/A")
+    
+    oic_base64 = image_to_base64(canvas_result_oic.image_data)
+    ncr_base64 = image_to_base64(canvas_result_30ncr.image_data)
+    
+    html_content = f"""
+    <html>
+      <head>
+        <style>
+          body {{ font-family: Arial, sans-serif; margin: 20px; }}
+          .signature {{ border: 1px solid #000; width: 500px; height: 150px; }}
+          h2, h3 {{ text-align: center; }}
+        </style>
+      </head>
+      <body>
+        <h2>Final Score: {final_score} out of 175</h2>
+        <h3>Final Percentage: {final_percentage}%</h3>
+        <h4>OIC Signature:</h4>
+        <img src="data:image/png;base64,{oic_base64}" class="signature"/>
+        <h4>30 NCR Signature:</h4>
+        <img src="data:image/png;base64,{ncr_base64}" class="signature"/>
+        <script>
+          window.onload = function() {{
+             window.print();
+          }};
+        </script>
+      </body>
+    </html>
+    """
+    components.html(html_content, height=600)
