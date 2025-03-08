@@ -13,7 +13,7 @@ def sanitize(text):
 
 # -------------------------------------------------------------------
 # Handbook Amplifying Info for Items 1–29
-# (Update these strings as needed to match your official CQI Handbook.)
+# Update these strings to match your official CQI Handbook.
 # -------------------------------------------------------------------
 handbook_info = {
     "Item 1 – Self Assessment": "Has the unit completed an initial self-assessment CQI checklist? (Yes = 2 pts, No = 0 pts)",
@@ -48,9 +48,45 @@ handbook_info = {
 }
 
 # -------------------------------------------------------------------
-# Function to generate a print-friendly HTML form
+# Define Perfect Scores for Each Item
+# (These values should reflect the maximum points for each item.)
 # -------------------------------------------------------------------
-def generate_html(form_data, handbook_info):
+perfect_scores = {
+    "Item 1 – Self Assessment": 2,
+    "Item 2 – Self Assessment Submission": 2,
+    "Item 3 – Notice to Proceed (NTP)": 4,
+    "Item 4 – Project Schedule": 16,
+    "Item 5 – Project Management": 2,
+    "Item 6 – QA for 30 NCR Detail Sites": 4,
+    "Item 7 & 8 – FAR/RFI": 4,
+    "Item 9 – DFOW Sheet": 4,
+    "Item 10 – Turnover Projects": 4,  # or "N/A" is acceptable
+    "Item 11 – Funds Provided": 4,
+    "Item 12 – Estimate at Completion Cost (EAC)": 4,
+    "Item 13 – Current Expenditures": 4,
+    "Item 14 – Project Material Status Report (PMSR)": 10,
+    "Item 15 – Report Submission": 2,
+    "Item 16 – Materials On-Hand": 10,
+    "Item 17 – DD Form 200": 2,
+    "Item 18 – Borrowed Material Tickler File": 2,
+    "Item 19 – Project Brief": 5,
+    "Item 20 – Calculate Manday Capability": 6,
+    "Item 21 – Equipment": 6,
+    "Item 22 – CASS Spot Check": 12,
+    "Item 23 – Designation Letters": 5,
+    "Item 24 – Job Box Review": 20,
+    "Item 25 – Review QC Package": 8,
+    "Item 26 – Submittals": 4,
+    "Item 27a – QC Inspection Plan": 10,
+    "Item 27b – QC Inspection": 5,
+    "Item 28 – Job Box Review (QC)": 5,
+    "Item 29 – Job Box Review (Safety)": 5,
+}
+
+# -------------------------------------------------------------------
+# Function to generate the print-friendly HTML form
+# -------------------------------------------------------------------
+def generate_html(form_data, handbook_info, perfect_scores):
     html = f"""
     <html>
     <head>
@@ -118,6 +154,15 @@ def generate_html(form_data, handbook_info):
     for item, info in handbook_info.items():
         score = form_data.get(item, "")
         comment = form_data.get(f"Comment for {item}", "")
+        # Only display the comment block if the score is numeric, not "N/A", and less than the perfect score.
+        display_comment = False
+        try:
+            numeric_score = float(score)
+            if numeric_score < perfect_scores.get(item, numeric_score):
+                display_comment = bool(comment.strip())
+        except (ValueError, TypeError):
+            display_comment = False
+        
         html += f"""
         <div class="item-block">
           <div>
@@ -125,7 +170,7 @@ def generate_html(form_data, handbook_info):
             <span class="score">{score}</span>
           </div>
         """
-        if str(comment).strip():
+        if display_comment:
             html += f"""
           <div class="comment">COMMENT: {comment}</div>
             """
@@ -145,11 +190,11 @@ def generate_html(form_data, handbook_info):
     return html
 
 # -------------------------------------------------------------------
-# Main App – Data Input
+# Main App – Data Input (Production Ready)
 # -------------------------------------------------------------------
 st.title("CQI Assessment Tool - Printable Form")
 st.markdown("**DEC 2023 - CONSTRUCTION QUALITY INSPECTION (CQI) HANDBOOK**")
-st.write("Enter your project and checklist data below. When finished, click the 'Generate Printable Form' button and then use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
+st.write("Enter your project and checklist data below. When finished, click the 'Generate Printable Form' button and use your browser’s print function (Ctrl+P / Cmd+P) to print or save as PDF.")
 
 # --- Project Information ---
 st.header("Project Information")
@@ -172,19 +217,18 @@ form_data = {
 
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
-# Loop through each checklist item defined in handbook_info.
+# Loop through each checklist item.
 for item in handbook_info:
     st.subheader(item)
     st.info(handbook_info[item])
-    # Use number_input for numeric score.
-    score = st.number_input(f"Enter score for {item}:", key=item, format="%g")
-    comment = st.text_area(f"Enter comment for {item} (if any):", key="Comment for " + item)
+    # Use a number_input for numeric score.
+    score = st.number_input(f"Enter score for {item}:", key=item)
+    comment = st.text_area(f"Enter comment for {item} (required if score below perfect):", key="Comment for " + item)
     form_data[item] = score
     form_data["Comment for " + item] = comment
 
 # Calculate final score.
-# (This calculation assumes that each score is numeric.
-# Adjust the logic as needed for your business rules.)
+# (This assumes all scores are numeric; adjust logic as needed.)
 total_score = sum(form_data[item] for item in handbook_info if isinstance(form_data[item], (int, float)))
 final_percentage = round(total_score / 175 * 100, 1)
 form_data["Final Score"] = total_score
@@ -194,6 +238,6 @@ st.write(f"Final Score: {total_score} out of 175")
 st.write(f"Final Percentage: {final_percentage}%")
 
 if st.button("Generate Printable Form"):
-    html_output = generate_html(form_data, handbook_info)
+    html_output = generate_html(form_data, handbook_info, perfect_scores)
     components.html(html_output, height=600, scrolling=True)
     st.markdown("### Use your browser's print function (Ctrl+P / Cmd+P) to print or save as PDF.")
