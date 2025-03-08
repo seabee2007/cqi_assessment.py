@@ -339,3 +339,54 @@ if st.button("Calculate Final Score"):
         st.success("Final Score Calculated!")
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
+
+import streamlit as st
+
+# Print-specific CSS
+st.markdown(
+    """
+    <style>
+    /* Hide elements with the "no-print" class when printing */
+    .no-print {
+        display: none;
+    }
+
+    /* Style adjustments for printing */
+    @media print {
+        body {
+            margin: 20px;
+            font-size: 12pt;
+        }
+        .reportview-container .main .block-container {
+            padding: 0;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Your form content goes here
+st.title("Construction Quality Inspection (CQI) Assessment Tool")
+st.write("Please fill out the form below.")
+
+# Example form input
+proj_name = st.text_input("Project Name:")
+# ... (other form inputs) ...
+
+# Instructions for printing
+st.markdown(
+    """
+    <div class="no-print" style="text-align: center; margin-top: 20px;">
+      <p>To print this form, please press <kbd>Ctrl+P</kbd> (or <kbd>Cmd+P</kbd> on macOS).</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Final output, for example, a calculated score or summary
+if st.button("Calculate Final Score"):
+    # Your calculation logic...
+    st.success("Final Score Calculated!")
+    st.write("Your final score is: 100")
+
