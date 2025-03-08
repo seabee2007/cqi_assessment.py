@@ -108,123 +108,65 @@ handbook_info = {
 import streamlit as st
 import emoji
 
-# Initialize modal state and calculator expression in session state if not already set
-if "show_calculator" not in st.session_state:
-    st.session_state.show_calculator = False
+# Initialize calculator expression in session state if not already set
 if "calc_expr" not in st.session_state:
     st.session_state.calc_expr = ""
 
-# A sidebar button to open the calculator modal
-if st.sidebar.button("Open Calculator"):
-    st.session_state.show_calculator = True
+# Use an expander in the sidebar to simulate a modal-like calculator
+with st.sidebar.expander("Calculator " + emoji.emojize(":abacus:"), expanded=True):
+    # Display the current expression in a read-only text input
+    st.text_input("Expression", value=st.session_state.calc_expr, key="calc_display", disabled=True)
 
-# Define calculator functions
-def append_value(val):
-    st.session_state.calc_expr += str(val)
+    # Layout calculator buttons in a grid using columns
+    col1, col2, col3, col4 = st.columns(4)
+    if col1.button("7", key="btn7"):
+        st.session_state.calc_expr += "7"
+    if col2.button("8", key="btn8"):
+        st.session_state.calc_expr += "8"
+    if col3.button("9", key="btn9"):
+        st.session_state.calc_expr += "9"
+    if col4.button("/", key="btn_div"):
+        st.session_state.calc_expr += "/"
 
-def clear_expr():
-    st.session_state.calc_expr = ""
+    col1, col2, col3, col4 = st.columns(4)
+    if col1.button("4", key="btn4"):
+        st.session_state.calc_expr += "4"
+    if col2.button("5", key="btn5"):
+        st.session_state.calc_expr += "5"
+    if col3.button("6", key="btn6"):
+        st.session_state.calc_expr += "6"
+    if col4.button("*", key="btn_mul"):
+        st.session_state.calc_expr += "*"
 
-def evaluate_expr():
-    try:
-        # WARNING: Using eval() is not safe for untrusted input.
-        st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
-    except Exception:
-        st.session_state.calc_expr = "Error"
+    col1, col2, col3, col4 = st.columns(4)
+    if col1.button("1", key="btn1"):
+        st.session_state.calc_expr += "1"
+    if col2.button("2", key="btn2"):
+        st.session_state.calc_expr += "2"
+    if col3.button("3", key="btn3"):
+        st.session_state.calc_expr += "3"
+    if col4.button("-", key="btn_sub"):
+        st.session_state.calc_expr += "-"
 
-# If the modal flag is True, display the modal
-if st.session_state.show_calculator:
-    st.markdown(
-        """
-        <style>
-          /* Modal overlay covers the entire screen */
-          .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 9999;
-          }
-          /* Modal content centered on screen */
-          .modal-content {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 10000;
-            width: 350px;
-          }
-          /* Calculator display style */
-          .calc-display {
-            font-size: 40px;
-            color: #333;
-            text-align: right;
-            margin-bottom: 10px;
-          }
-          /* (Optional) Hide the sidebar while modal is open */
-          /* .css-1d391kg { display: none; } */
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown('<div class="modal-overlay"></div>', unsafe_allow_html=True)
-    with st.container():
-        st.markdown('<div class="modal-content">', unsafe_allow_html=True)
-        st.title("Calculator " + emoji.emojize(":abacus:"))
-        # Display the current expression (or 0 if empty)
-        st.markdown(f"<div class='calc-display'>{st.session_state.calc_expr or '0'}</div>", unsafe_allow_html=True)
-        
-        # Arrange calculator buttons using columns
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            if st.button("7", key="modal_btn7"):
-                append_value("7")
-            if st.button("4", key="modal_btn4"):
-                append_value("4")
-            if st.button("1", key="modal_btn1"):
-                append_value("1")
-            if st.button("0", key="modal_btn0"):
-                append_value("0")
-        with col2:
-            if st.button("8", key="modal_btn8"):
-                append_value("8")
-            if st.button("5", key="modal_btn5"):
-                append_value("5")
-            if st.button("2", key="modal_btn2"):
-                append_value("2")
-            if st.button(".", key="modal_btndot"):
-                append_value(".")
-        with col3:
-            if st.button("9", key="modal_btn9"):
-                append_value("9")
-            if st.button("6", key="modal_btn6"):
-                append_value("6")
-            if st.button("3", key="modal_btn3"):
-                append_value("3")
-            if st.button("=", key="modal_btnEquals"):
-                evaluate_expr()
-        with col4:
-            if st.button(emoji.emojize(":heavy_plus_sign:"), key="modal_btnPlus"):
-                append_value("+")
-            if st.button(emoji.emojize(":heavy_minus_sign:"), key="modal_btnMinus"):
-                append_value("-")
-            if st.button(emoji.emojize(":heavy_multiplication_x:"), key="modal_btnMultiply"):
-                append_value("*")
-            if st.button(emoji.emojize(":heavy_division_sign:"), key="modal_btnDivide"):
-                append_value("/")
-            if st.button("C", key="modal_btnClear"):
-                clear_expr()
-        
-        # Button to close the calculator modal
-        if st.button("Close Calculator", key="modal_btnCloseCalc"):
-            st.session_state.show_calculator = False
-        
-        st.markdown("</div>", unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    if col1.button("0", key="btn0"):
+        st.session_state.calc_expr += "0"
+    if col2.button(".", key="btn_dot"):
+        st.session_state.calc_expr += "."
+    if col3.button("=", key="btn_eq"):
+        try:
+            st.session_state.calc_expr = str(eval(st.session_state.calc_expr))
+        except Exception:
+            st.session_state.calc_expr = "Error"
+    if col4.button("+", key="btn_add"):
+        st.session_state.calc_expr += "+"
+
+    if st.button("Clear", key="btn_clear"):
+        st.session_state.calc_expr = ""
+
+# Display the current expression below the calculator for feedback
+st.write("Current Expression:", st.session_state.calc_expr)
+
 
 
 # -------------------------------------------------------------------
