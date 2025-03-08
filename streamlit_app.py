@@ -387,12 +387,6 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
-# ... (your final score calculation block)
-
-if "final_score" in st.session_state:
-    st.success("Final Score Calculated!")
-    st.write("**Final Score:**", st.session_state.final_score, "out of 175")
-    st.write("**Final Percentage:**", st.session_state.final_percentage, "%")
 
 
 
