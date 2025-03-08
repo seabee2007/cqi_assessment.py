@@ -340,19 +340,22 @@ if st.button("Calculate Final Score"):
         st.write("**Final Score:**", total_score, "out of 175")
         st.write("**Final Percentage:**", final_percentage, "%")
 
-if st.button("Print This Page"):
+if st.button("Print This Page in New Window"):
     st.components.v1.html(
         """
-        <html>
-          <head>
-            <script>
-              window.print();
-            </script>
-          </head>
-          <body></body>
-        </html>
+        <script>
+          var printWindow = window.open('', '', 'height=600,width=800');
+          printWindow.document.write('<html><head><title>Print</title></head><body>');
+          printWindow.document.write(document.getElementsByTagName('html')[0].innerHTML);
+          printWindow.document.write('</body></html>');
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        </script>
         """,
-        height=0,
+        height=600,
     )
+
 
        
