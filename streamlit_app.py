@@ -388,8 +388,6 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         st.write("**Final Percentage:**", final_percentage, "%")
 
 
-
-
 # -------------------------------------------------------------------
 # Print instructions (won't be printed because of the no-print class)
 # -------------------------------------------------------------------
@@ -403,4 +401,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
