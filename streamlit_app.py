@@ -251,12 +251,12 @@ pdf_file = generate_pdf({}, handbook_info)
 
     
     # --- Project Information ---
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, sanitize("Project Information"), ln=True)
-    pdf.set_font("Arial", size=12)
-    pdf.cell(0, 10, sanitize(f"Project Name: {form_data['Project Name']}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Battalion: {form_data['Battalion']}"), ln=True)
-    pdf.cell(0, 10, sanitize(f"Start Date: {form_data['Start Date']}"), ln=True)
+pdf.set_font("Arial", "B", 14)
+pdf.cell(0, 10, sanitize("Project Information"), ln=True)
+pdf.set_font("Arial", size=12)
+pdf.cell(0, 10, sanitize(f"Project Name: {form_data['Project Name']}"), ln=True)
+pdf.cell(0, 10, sanitize(f"Battalion: {form_data['Battalion']}"), ln=True)
+pdf.cell(0, 10, sanitize(f"Start Date: {form_data['Start Date']}"), ln=True)
     pdf.cell(0, 10, sanitize(f"Planned Start: {form_data['Planned Start']}"), ln=True)
     pdf.cell(0, 10, sanitize(f"Planned Completion: {form_data['Planned Completion']}"), ln=True)
     pdf.cell(0, 10, sanitize(f"Actual Completion: {form_data['Actual Completion']}"), ln=True)
