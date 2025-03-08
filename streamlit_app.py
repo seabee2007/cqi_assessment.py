@@ -394,16 +394,6 @@ if "final_score" in st.session_state:
     st.write("**Final Score:**", st.session_state.final_score, "out of 175")
     st.write("**Final Percentage:**", st.session_state.final_percentage, "%")
 
-# Print instructions (won't be printed because of the no-print class)
-st.markdown(
-    """
-    <div class="no-print" style="text-align: center; margin-top: 20px;">
-      <p>To print this form, please press <kbd>Ctrl+P</kbd> (or <kbd>Cmd+P</kbd> on macOS).</p>
-      <button onclick="window.parent.print()">Print This Page</button>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
 
 # -------------------------------------------------------------------
@@ -412,19 +402,11 @@ st.markdown(
 st.markdown(
     """
     <div class="no-print" style="text-align: center; margin-top: 20px;">
-      <p>To print this form, please press <kbd>Ctrl+P</kbd> (or <kbd>Cmd+P</kbd> on macOS).</p>
+      <button onclick="window.print(); return false;" style="padding:10px 20px; font-size:16px;">
+        Print This Page
+      </button>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-if st.button("Print This Page"):
-    st.components.v1.html(
-        """
-        <script>
-          window.parent.print();
-        </script>
-        """,
-        height=0,
-    )
 
