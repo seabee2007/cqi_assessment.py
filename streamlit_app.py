@@ -241,25 +241,177 @@ form_data = {
 # --- Assessment Inputs ---
 st.header("Assessment Inputs")
 
-# Loop through each checklist item.
-for item in handbook_info:
-    st.subheader(item)
-    st.info(handbook_info[item])
-    if item in yes_no_items:
-        # For yes/no items, use radio buttons.
-        resp = st.radio(f"Enter response for {item}:", options=["Yes", "No"], key=item)
-        score = yes_no_scores.get(item, 0) if resp == "Yes" else 0
-        form_data[item] = score
-        # Require comment if response is not "Yes".
-        comment = st.text_area(f"Enter comment for {item} (required if not 'Yes'):", key="Comment for " + item) if resp != "Yes" else ""
-        form_data["Comment for " + item] = comment
-    else:
-        # For numeric items, use number_input for whole numbers.
-        score = st.number_input(f"Enter score for {item}:", key=item, step=1)
-        form_data[item] = score
-        # Show comment input only if score is below the perfect score.
-        comment = st.text_area(f"Enter comment for {item} (required if score is below {perfect_scores.get(item)}):", key="Comment for " + item) if score < perfect_scores.get(item) else ""
-        form_data["Comment for " + item] = comment
+# For each item, display the item subheader, then show the amplifying info (via st.info),
+# then provide input widgets for score and comment.
+# Item 1
+st.subheader("Item 1 – Self Assessment")
+st.info(handbook_info["Item 1 – Self Assessment"])
+item1 = st.radio("Response:", options=["Yes", "No"], key="item1")
+comment_item1 = st.text_area("Comment (if not perfect):", key="Comment for Item 1") if item1 != "Yes" else ""
+# Item 2
+st.subheader("Item 2 – Self Assessment Submission")
+st.info(handbook_info["Item 2 – Self Assessment Submission"])
+item2 = st.radio("Response:", options=["Yes", "No"], key="item2")
+comment_item2 = st.text_area("Comment (if not perfect):", key="Comment for Item 2") if item2 != "Yes" else ""
+# Item 3
+st.subheader("Item 3 – Notice to Proceed (NTP)")
+st.info(handbook_info["Item 3 – Notice to Proceed (NTP)"])
+item3 = st.radio("Response:", options=["Yes", "No"], key="item3")
+comment_item3 = st.text_area("Comment (if not perfect):", key="Comment for Item 3") if item3 != "Yes" else ""
+# Item 4 – Project Schedule (calculated score)
+st.subheader("Item 4 – Project Schedule")
+st.info(handbook_info["Item 4 – Project Schedule"])
+st.markdown(
+    "Score is based on the difference between planned and actual work-in-place.\n"
+    "Exact = 16 pts; Within deviation = 12 pts; Outside deviation = 4 pts."
+)
+total_md = st.number_input("Total Project Mandays:", value=1000, step=1, key="total_md")
+planned_wip = st.number_input("Planned Work-in-Place (%)", value=100, step=1, key="planned_wip")
+actual_wip = st.number_input("Actual Work-in-Place (%)", value=100, step=1, key="actual_wip")
+if total_md < 1000:
+    allowed = 10
+elif total_md < 2000:
+    allowed = 5
+else:
+    allowed = 2.5
+diff = abs(actual_wip - planned_wip)
+if diff == 0:
+    item4_score = 16
+elif diff <= allowed:
+    item4_score = 12
+else:
+    item4_score = 4
+st.write(f"Calculated Score for Item 4: {item4_score}")
+comment_item4 = st.text_area("Comment (if not perfect):", key="Comment for Item 4") if item4_score != 16 else ""
+# Item 5
+st.subheader("Item 5 – Project Management")
+st.info(handbook_info["Item 5 – Project Management"])
+item5 = st.radio("Response:", options=["Yes", "No"], key="item5")
+comment_item5 = st.text_area("Comment (if not perfect):", key="Comment for Item 5") if item5 != "Yes" else ""
+# Item 6
+st.subheader("Item 6 – QA for 30 NCR Detail Sites")
+st.info(handbook_info["Item 6 – QA for 30 NCR Detail Sites"])
+item6 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item6")
+comment_item6 = st.text_area("Comment (if not perfect):", key="Comment for Item 6") if item6 != 4 else ""
+# Item 7 & 8
+st.subheader("Item 7 & 8 – FAR/RFI")
+st.info(handbook_info["Item 7 & 8 – FAR/RFI"])
+item78 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item78")
+comment_item78 = st.text_area("Comment (if not perfect):", key="Comment for Item 7 & 8") if item78 != 4 else ""
+# Item 9
+st.subheader("Item 9 – DFOW Sheet")
+st.info(handbook_info["Item 9 – DFOW Sheet"])
+item9 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item9")
+comment_item9 = st.text_area("Comment (if not perfect):", key="Comment for Item 9") if item9 != 4 else ""
+# Item 10
+st.subheader("Item 10 – Turnover Projects")
+st.info(handbook_info["Item 10 – Turnover Projects"])
+item10 = st.selectbox("Select score:", options=["N/A", 4, 0], key="item10")
+comment_item10 = st.text_area("Comment (if not perfect):", key="Comment for Item 10") if item10 not in ["N/A", 4] else ""
+# Item 11
+st.subheader("Item 11 – Funds Provided")
+st.info(handbook_info["Item 11 – Funds Provided"])
+item11 = st.radio("Response:", options=["Yes", "No"], key="item11")
+comment_item11 = st.text_area("Comment (if not perfect):", key="Comment for Item 11") if item11 != "Yes" else ""
+# Item 12
+st.subheader("Item 12 – Estimate at Completion Cost (EAC)")
+st.info(handbook_info["Item 12 – Estimate at Completion Cost (EAC)"])
+item12 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item12")
+comment_item12 = st.text_area("Comment (if not perfect):", key="Comment for Item 12") if item12 != 4 else ""
+# Item 13
+st.subheader("Item 13 – Current Expenditures")
+st.info(handbook_info["Item 13 – Current Expenditures"])
+item13 = st.selectbox("Select score:", options=[4, 3, 2, 0], key="item13")
+comment_item13 = st.text_area("Comment (if not perfect):", key="Comment for Item 13") if item13 != 4 else ""
+# Item 14
+st.subheader("Item 14 – Project Material Status Report (PMSR)")
+st.info(handbook_info["Item 14 – Project Material Status Report (PMSR)"])
+item14 = st.selectbox("Select score:", options=[10, 8, 4, 2, 0], key="item14")
+comment_item14 = st.text_area("Comment (if not perfect):", key="Comment for Item 14") if item14 != 10 else ""
+# Item 15
+st.subheader("Item 15 – Report Submission")
+st.info(handbook_info["Item 15 – Report Submission"])
+item15 = st.radio("Response:", options=["Yes", "No"], key="item15")
+comment_item15 = st.text_area("Comment (if not perfect):", key="Comment for Item 15") if item15 != "Yes" else ""
+# Item 16
+st.subheader("Item 16 – Materials On-Hand")
+st.info(handbook_info["Item 16 – Materials On-Hand"])
+item16 = st.selectbox("Select score:", options=[10, 8, 4, 0], key="item16")
+comment_item16 = st.text_area("Comment (if not perfect):", key="Comment for Item 16") if item16 != 10 else ""
+# Item 17
+st.subheader("Item 17 – DD Form 200")
+st.info(handbook_info["Item 17 – DD Form 200"])
+item17 = st.radio("Response:", options=["Yes", "No"], key="item17")
+comment_item17 = st.text_area("Comment (if not perfect):", key="Comment for Item 17") if item17 != "Yes" else ""
+# Item 18
+st.subheader("Item 18 – Borrowed Material Tickler File")
+st.info(handbook_info["Item 18 – Borrowed Material Tickler File"])
+item18 = st.radio("Response:", options=["Yes", "No"], key="item18")
+comment_item18 = st.text_area("Comment (if not perfect):", key="Comment for Item 18") if item18 != "Yes" else ""
+# Item 19
+st.subheader("Item 19 – Project Brief")
+st.info(handbook_info["Item 19 – Project Brief"])
+item19 = st.selectbox("Select score:", options=[5, 3, 2, 0], key="item19")
+comment_item19 = st.text_area("Comment (if not perfect):", key="Comment for Item 19") if item19 != 5 else ""
+# Item 20
+st.subheader("Item 20 – Calculate Manday Capability")
+st.info(handbook_info["Item 20 – Calculate Manday Capability"])
+item20 = st.selectbox("Select score:", options=[6, 4, 2, 0], key="item20")
+comment_item20 = st.text_area("Comment (if not perfect):", key="Comment for Item 20") if item20 != 6 else ""
+# Item 21
+st.subheader("Item 21 – Equipment")
+st.info(handbook_info["Item 21 – Equipment"])
+item21 = st.selectbox("Select score:", options=[6, 4, 2, 0], key="item21")
+comment_item21 = st.text_area("Comment (if not perfect):", key="Comment for Item 21") if item21 != 6 else ""
+# Item 22
+st.subheader("Item 22 – CASS Spot Check")
+st.info(handbook_info["Item 22 – CASS Spot Check"])
+item22 = st.selectbox("Select score:", options=[12, 8, 4, 0], key="item22")
+comment_item22 = st.text_area("Comment (if not perfect):", key="Comment for Item 22") if item22 != 12 else ""
+# Item 23
+st.subheader("Item 23 – Designation Letters")
+st.info(handbook_info["Item 23 – Designation Letters"])
+item23 = st.selectbox("Select score:", options=[5, 3, 0], key="item23")
+comment_item23 = st.text_area("Comment (if not perfect):", key="Comment for Item 23") if item23 != 5 else ""
+# Item 24
+st.subheader("Item 24 – Job Box Review")
+st.info(handbook_info["Item 24 – Job Box Review"])
+item24 = st.selectbox("Select score (20 is perfect; deductions apply):", options=[20, 0], key="item24")
+deduction24 = st.number_input("Enter deduction for Item 24 (0 to 20):", min_value=0, max_value=20, value=0, step=1, key="deduction24")
+calculated_item24 = 20 - deduction24
+comment_item24 = st.text_area("Comment (if deduction applied):", key="Comment for Item 24") if deduction24 != 0 else ""
+# Item 25
+st.subheader("Item 25 – Review QC Package")
+st.info(handbook_info["Item 25 – Review QC Package"])
+item25 = st.selectbox("Select score:", options=[8, 6, 4, 0], key="item25")
+comment_item25 = st.text_area("Comment (if not perfect):", key="Comment for Item 25") if item25 != 8 else ""
+# Item 26
+st.subheader("Item 26 – Submittals")
+st.info(handbook_info["Item 26 – Submittals"])
+item26 = st.selectbox("Select score:", options=[4, 2, 0], key="item26")
+comment_item26 = st.text_area("Comment (if not perfect):", key="Comment for Item 26") if item26 != 4 else ""
+# Item 27a
+st.subheader("Item 27a – QC Inspection Plan")
+st.info(handbook_info["Item 27a – QC Inspection Plan"])
+item27a = st.selectbox("Select score:", options=[10, 7, 3, 0], key="item27a")
+comment_item27a = st.text_area("Comment (if not perfect):", key="Comment for Item 27a") if item27a != 10 else ""
+# Item 27b
+st.subheader("Item 27b – QC Inspection")
+st.info(handbook_info["Item 27b – QC Inspection"])
+item27b = st.selectbox("Select score:", options=[5, 0], key="item27b")
+comment_item27b = st.text_area("Comment (if not perfect):", key="Comment for Item 27b") if item27b != 5 else ""
+# Item 28
+st.subheader("Item 28 – Job Box Review (QC)")
+st.info(handbook_info["Item 28 – Job Box Review (QC)"])
+deduction28 = st.number_input("Enter deduction for Item 28 (0 to 5):", min_value=0, max_value=5, value=0, step=1, key="deduction28")
+item28 = 5 - deduction28
+comment_item28 = st.text_area("Comment (if deduction applied):", key="Comment for Item 28") if deduction28 != 0 else ""
+# Item 29
+st.subheader("Item 29 – Job Box Review (Safety)")
+st.info(handbook_info["Item 29 – Job Box Review (Safety)"])
+deduction29 = st.number_input("Enter deduction for Item 29 (0 to 5):", min_value=0, max_value=5, value=0, step=1, key="deduction29")
+item29 = 5 - deduction29
+comment_item29 = st.text_area("Comment (if deduction applied):", key="Comment for Item 29") if deduction29 != 0 else ""
 
 # -------------------------------------------------------------------
 # Calculate Final Score Button
