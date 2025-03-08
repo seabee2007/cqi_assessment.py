@@ -4,14 +4,18 @@ import datetime
 import io
 import os
 
+# -------------------------------------------------------------------
+# Print-specific CSS (injected at the top)
+# -------------------------------------------------------------------
 st.markdown(
     """
     <style>
-    /* Only hide elements with the "no-print" class when printing */
+    /* Hide elements with the "no-print" class when printing */
+    .no-print {
+        display: none;
+    }
+    /* Style adjustments for printing */
     @media print {
-        .no-print {
-            display: none;
-        }
         body {
             margin: 20px;
             font-size: 12pt;
@@ -377,14 +381,16 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         )
         final_percentage = round(total_score / 175 * 100, 1)
        
-        # Re-display the final score if available (so that a rerun doesn't lose it)
-if "final_score" in st.session_state:
-    st.success("Final Score Calculated!")
-    st.write("**Final Score:**", st.session_state.final_score, "out of 175")
-    st.write("**Final Percentage:**", st.session_state.final_percentage, "%")
+        st.session_state.final_score = total_score
+        st.session_state.final_percentage = final_percentage
+        st.success("Final Score Calculated!")
+        st.write("**Final Score:**", total_score, "out of 175")
+        st.write("**Final Percentage:**", final_percentage, "%")
 
-# Now add a widget button for printing:
-if st.button("Print This Page", key="print_button"):
+# -------------------------------------------------------------------
+# Print instructions (won't be printed because of the no-print class)
+# -------------------------------------------------------------------
+if st.button("Print This Page"):
     st.components.v1.html(
         """
         <script>
