@@ -575,8 +575,8 @@ if st.button("Print Full Report", key="print_full_report"):
       <head>
         <style>
           body {{ font-family: Arial, sans-serif; margin: 20px; }}
-          table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
-          th, td {{ border: 1px solid #000; padding: 8px; text-align: left; }}
+          table {{ width: 100%; height: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+          th, td {{ border: 1px solid #000; padding: 6px; text-align: left; }}
           th {{ background-color: #f2f2f2; }}
           .assessment-table tr td:nth-child(1),
           .assessment-table tr td:nth-child(2) {{
