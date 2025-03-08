@@ -623,4 +623,4 @@ html_content = f"""
     """
     
     # Render the HTML snapshot in an iframe for printing
-    components.html(html_content, height=800)
+components.html(html_content, height=800)
