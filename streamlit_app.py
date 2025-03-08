@@ -377,21 +377,19 @@ if st.button("Calculate Final Score", key="calculate_final_score"):
         )
         final_percentage = round(total_score / 175 * 100, 1)
        
-        st.session_state.final_score = total_score
-        st.session_state.final_percentage = final_percentage
-        st.success("Final Score Calculated!")
-        st.write("**Final Score:**", total_score, "out of 175")
-        st.write("**Final Percentage:**", final_percentage, "%")
+        # Re-display the final score if available (so that a rerun doesn't lose it)
+if "final_score" in st.session_state:
+    st.success("Final Score Calculated!")
+    st.write("**Final Score:**", st.session_state.final_score, "out of 175")
+    st.write("**Final Percentage:**", st.session_state.final_percentage, "%")
 
-
-st.markdown(
-    """
-    <div class="no-print" style="text-align: center; margin-top: 20px;">
-      <button onclick="window.top.print(); return false;" 
-              style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size:16px; cursor: pointer;">
-        Print This Page
-      </button>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# Now add a widget button for printing:
+if st.button("Print This Page", key="print_button"):
+    st.components.v1.html(
+        """
+        <script>
+          window.parent.print();
+        </script>
+        """,
+        height=0,
+    )
